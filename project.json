@@ -156,35 +156,35 @@
     {
       "name": "Cited answers",
       "goal": "Answers written only from retrieved passages, with checked citations and refusals.",
-      "status": "doing",
-      "outcome": "",
+      "status": "done",
+      "outcome": "The assistant retrieves four passages, refuses before calling the model when the best relevance score is under the threshold, and otherwise asks the model for an answer with numbered citations. Citations to passages that were not provided are removed, uncited answers and figures missing from the cited passages are flagged. An OpenAI-compatible provider tracks tokens and cost, and an offline writer quotes the top passage so everything runs with no key.",
       "steps": [
         {
           "text": "Write the answer prompt with numbered sources",
-          "done": false
+          "done": true
         },
         {
           "text": "Add the OpenAI-compatible provider with token and cost tracking",
-          "done": false
+          "done": true
         },
         {
           "text": "Add the offline answer writer for tests and keyless runs",
-          "done": false
+          "done": true
         },
         {
           "text": "Check citations and flag answers without valid ones",
-          "done": false
+          "done": true
         },
         {
           "text": "Add the relevance gate that refuses out-of-scope questions",
-          "done": false
+          "done": true
         }
       ]
     },
     {
       "name": "Evaluation",
       "goal": "Numbers for every retrieval stage and for the answers.",
-      "status": "todo",
+      "status": "doing",
       "outcome": "",
       "steps": [
         {
