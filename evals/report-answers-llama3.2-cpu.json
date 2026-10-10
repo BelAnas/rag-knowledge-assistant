@@ -1,0 +1,875 @@
+{
+  "summary": {
+    "llm": "llama3.2-cpu",
+    "reranker": "none",
+    "dense_weight": 0.7,
+    "embedder": "BAAI/bge-small-en-v1.5",
+    "min_relevance": 0.6,
+    "answerable": 43,
+    "answerable_correct": 33,
+    "answerable_cited_right_passage": 33,
+    "answerable_fact_present": 33,
+    "answerable_wrongly_refused": 9,
+    "unanswerable": 14,
+    "unanswerable_refused": 14,
+    "unanswerable_refused_by_gate": 4,
+    "answers_with_warnings": 3,
+    "prompt_tokens": 20704,
+    "completion_tokens": 2268,
+    "cost_usd": 0.0,
+    "latency_ms_median": 11176.1
+  },
+  "rows": [
+    {
+      "id": "q01",
+      "type": "direct",
+      "question": "How long does Kestrel Standard delivery take?",
+      "answer": "Delivery takes 2 to 4 business days after the first depot scan [1].",
+      "refused": false,
+      "refusal_reason": null,
+      "cited": [
+        "service-levels#standard-service"
+      ],
+      "warnings": [],
+      "top_similarity": 0.911,
+      "cited_gold": true,
+      "facts_ok": true,
+      "correct": true
+    },
+    {
+      "id": "q03",
+      "type": "paraphrase",
+      "question": "Which is the cheapest shipping option and how slow is it?",
+      "answer": "I could not find this in the documents.",
+      "refused": true,
+      "refusal_reason": "model",
+      "cited": [],
+      "warnings": [],
+      "top_similarity": 0.656,
+      "cited_gold": false,
+      "facts_ok": false,
+      "correct": false
+    },
+    {
+      "id": "q05",
+      "type": "paraphrase",
+      "question": "My overnight parcel showed up two days late. Do I get my money back?",
+      "answer": "According to [2], if an Express parcel arrives more than 24 hours after the promised time, the shipping fee for that parcel is credited to the account. However, this guarantee does not apply to delays caused by severe weather, customs holds, or during the peak season. Since the cause of the delay is not specified in your message, I could not determine if you are eligible for a refund [2].",
+      "refused": false,
+      "refusal_reason": null,
+      "cited": [
+        "service-levels#express-guarantee"
+      ],
+      "warnings": [],
+      "top_similarity": 0.702,
+      "cited_gold": true,
+      "facts_ok": true,
+      "correct": true
+    },
+    {
+      "id": "q07",
+      "type": "paraphrase",
+      "question": "How do you bill a big box that weighs almost nothing?",
+      "answer": "A big box that weighs almost nothing would be billed using its volumetric weight, calculated as length x width x height in centimetres, divided by 5000 [2]. The invoice uses whichever is higher: the actual weight or the volumetric weight. Since the box weighs almost nothing, its actual weight will likely be very low, so it's likely that the volumetric weight would be used to calculate the bill.",
+      "refused": false,
+      "refusal_reason": null,
+      "cited": [
+        "parcel-limits-packaging#volumetric-weight"
+      ],
+      "warnings": [],
+      "top_similarity": 0.732,
+      "cited_gold": true,
+      "facts_ok": true,
+      "correct": true
+    },
+    {
+      "id": "q09",
+      "type": "paraphrase",
+      "question": "I'm sending a poster tube that can't go on the conveyor. Is there an extra charge?",
+      "answer": "Yes, if a parcel cannot travel on the sorting belt due to its size or shape, such as a tube, and must be handled manually, an oversize surcharge of 12 EUR per parcel will be added [1]. This may also add one business day to the transit time. There is no mention of any additional charges for handling a poster tube specifically.",
+      "refused": false,
+      "refusal_reason": null,
+      "cited": [
+        "parcel-limits-packaging#oversize-handling"
+      ],
+      "warnings": [],
+      "top_similarity": 0.69,
+      "cited_gold": true,
+      "facts_ok": true,
+      "correct": true
+    },
+    {
+      "id": "q11",
+      "type": "paraphrase",
+      "question": "What is the largest battery capacity allowed inside a laptop I ship?",
+      "answer": "I could not find this in the documents.",
+      "refused": true,
+      "refusal_reason": "model",
+      "cited": [],
+      "warnings": [],
+      "top_similarity": 0.677,
+      "cited_gold": false,
+      "facts_ok": false,
+      "correct": false
+    },
+    {
+      "id": "q13",
+      "type": "paraphrase",
+      "question": "Can I mail a potted fern abroad?",
+      "answer": "Yes, you can mail a live plant on Standard for domestic destinations only [1]. The plant must be packed upright in a box marked on two sides. However, plants are not eligible for damage compensation [1]. You will need to correct the address before dispatch to ensure it is accurate [4].",
+      "refused": false,
+      "refusal_reason": null,
+      "cited": [
+        "restricted-items#plants",
+        "address-correction#before-dispatch"
+      ],
+      "warnings": [],
+      "top_similarity": 0.664,
+      "cited_gold": true,
+      "facts_ok": true,
+      "correct": true
+    },
+    {
+      "id": "q15",
+      "type": "direct",
+      "question": "Until what time can I book a pickup for the same day?",
+      "answer": "Bookings made before 12:00 are collected the same day, and bookings made later are collected on the next business day [1]. There is no specific cut-off time mentioned in source [1] for booking a pickup for the same day.",
+      "refused": false,
+      "refusal_reason": null,
+      "cited": [
+        "pickups#booking-a-pickup"
+      ],
+      "warnings": [],
+      "top_similarity": 0.806,
+      "cited_gold": true,
+      "facts_ok": true,
+      "correct": true
+    },
+    {
+      "id": "q17",
+      "type": "paraphrase",
+      "question": "How many parcels a week do I need to send to get a fixed collection schedule?",
+      "answer": "To get a recurring pickup on fixed days, you need to ship at least 10 parcels per week [1]. There is no specific threshold mentioned in the sources for this.",
+      "refused": false,
+      "refusal_reason": null,
+      "cited": [
+        "pickups#recurring-pickups"
+      ],
+      "warnings": [],
+      "top_similarity": 0.791,
+      "cited_gold": true,
+      "facts_ok": true,
+      "correct": true
+    },
+    {
+      "id": "q19",
+      "type": "code",
+      "question": "What does PU-204 mean?",
+      "answer": "The premises were closed at pickup [1]. This status code, PU-204, indicates that the driver waited up to 5 minutes at the collection point but nobody was available [2]. The stop was recorded with this status code because the driver could not complete the pickup [1]. This means the parcel is no longer being held for pickup.",
+      "refused": false,
+      "refusal_reason": null,
+      "cited": [
+        "tracking-status-codes#pickup-and-depot-codes",
+        "pickups#missed-pickups"
+      ],
+      "warnings": [],
+      "top_similarity": 0.698,
+      "cited_gold": true,
+      "facts_ok": true,
+      "correct": true
+    },
+    {
+      "id": "q21",
+      "type": "paraphrase",
+      "question": "Nobody was home three times. Where is my package now and for how long?",
+      "answer": "After the third failed attempt, your parcel is held at the local depot [2]. It will be held there for 7 calendar days [2]. During this time, you can collect it with an identity document and the tracking number. If not collected, it will be returned to the sender [2].",
+      "refused": false,
+      "refusal_reason": null,
+      "cited": [
+        "delivery-attempts#held-at-depot"
+      ],
+      "warnings": [],
+      "top_similarity": 0.692,
+      "cited_gold": true,
+      "facts_ok": true,
+      "correct": true
+    },
+    {
+      "id": "q23",
+      "type": "direct",
+      "question": "When is a signature required?",
+      "answer": "A signature is required for every parcel with a declared value above 500 EUR, and whenever the sender selects the signature option [1].",
+      "refused": false,
+      "refusal_reason": null,
+      "cited": [
+        "delivery-attempts#signature"
+      ],
+      "warnings": [],
+      "top_similarity": 0.828,
+      "cited_gold": true,
+      "facts_ok": true,
+      "correct": true
+    },
+    {
+      "id": "q25",
+      "type": "direct",
+      "question": "How much does an address correction cost after dispatch?",
+      "answer": "An address correction costs 3.90 EUR after dispatch [1]. The change takes effect within 2 hours [1]. If the parcel is already on the delivery vehicle, the correction applies to the next attempt [1].",
+      "refused": false,
+      "refusal_reason": null,
+      "cited": [
+        "address-correction#after-dispatch"
+      ],
+      "warnings": [],
+      "top_similarity": 0.898,
+      "cited_gold": true,
+      "facts_ok": true,
+      "correct": true
+    },
+    {
+      "id": "q27",
+      "type": "paraphrase",
+      "question": "Can I send a parcel that's already travelling to a different country instead?",
+      "answer": "No, a parcel cannot be redirected to another country [1]. If you want to change the destination of a parcel that has already been dispatched, an address correction can be made after dispatch. However, this will incur a cost of 3.90 EUR and may not take effect until the next delivery attempt [3].",
+      "refused": false,
+      "refusal_reason": null,
+      "cited": [
+        "address-correction#what-cannot-be-changed",
+        "address-correction#after-dispatch"
+      ],
+      "warnings": [],
+      "top_similarity": 0.768,
+      "cited_gold": true,
+      "facts_ok": true,
+      "correct": true
+    },
+    {
+      "id": "q29",
+      "type": "direct",
+      "question": "How many days do I have to report a damaged parcel?",
+      "answer": "You must report damage within 7 calendar days of delivery [1]. This timeframe allows for any discrepancies in the delivery process to be investigated. If you fail to report damage within this time, it may impact your claim. The exact number of days is specified as \"calendar days\" in source [1].",
+      "refused": false,
+      "refusal_reason": null,
+      "cited": [
+        "damage-and-loss-claims#reporting-damage"
+      ],
+      "warnings": [],
+      "top_similarity": 0.867,
+      "cited_gold": true,
+      "facts_ok": true,
+      "correct": true
+    },
+    {
+      "id": "q31",
+      "type": "paraphrase",
+      "question": "After how long without tracking updates is a package declared missing?",
+      "answer": "I could not find this in the documents.",
+      "refused": true,
+      "refusal_reason": "model",
+      "cited": [],
+      "warnings": [],
+      "top_similarity": 0.711,
+      "cited_gold": false,
+      "facts_ok": false,
+      "correct": false
+    },
+    {
+      "id": "q33",
+      "type": "paraphrase",
+      "question": "How quickly will I hear back about my claim?",
+      "answer": "I could not find this in the documents.",
+      "refused": true,
+      "refusal_reason": "model",
+      "cited": [],
+      "warnings": [],
+      "top_similarity": 0.764,
+      "cited_gold": false,
+      "facts_ok": false,
+      "correct": false
+    },
+    {
+      "id": "q35",
+      "type": "paraphrase",
+      "question": "What do you charge when a customer sends an item back?",
+      "answer": "The return is billed at the Economy rate minus 10 percent [2]. This means that if the original shipping cost was 100 EUR, the return would be charged at 90 EUR.",
+      "refused": false,
+      "refusal_reason": null,
+      "cited": [
+        "returns#return-pricing"
+      ],
+      "warnings": [
+        "Figures not found in the cited sources: 100, 90"
+      ],
+      "top_similarity": 0.722,
+      "cited_gold": true,
+      "facts_ok": true,
+      "correct": true
+    },
+    {
+      "id": "q37",
+      "type": "paraphrase",
+      "question": "The recipient turned the parcel away at the door. What rate applies for sending it back?",
+      "answer": "I could not find this in the documents.",
+      "refused": true,
+      "refusal_reason": "model",
+      "cited": [],
+      "warnings": [],
+      "top_similarity": 0.765,
+      "cited_gold": false,
+      "facts_ok": false,
+      "correct": false
+    },
+    {
+      "id": "q39",
+      "type": "direct",
+      "question": "When is an HS code required?",
+      "answer": "An HS code is required when the goods are worth more than 150 EUR in total [1].",
+      "refused": false,
+      "refusal_reason": null,
+      "cited": [
+        "customs-international#hs-codes-and-eori"
+      ],
+      "warnings": [],
+      "top_similarity": 0.786,
+      "cited_gold": true,
+      "facts_ok": true,
+      "correct": true
+    },
+    {
+      "id": "q41",
+      "type": "code",
+      "question": "What should I do about status CU-301?",
+      "answer": "You need to supply the missing invoice documents through the portal within 14 days of receiving the status code CU-301 [1]. If you fail to do so, the parcel will be returned at your cost. You can check the tracking information for any updates or instructions from customs. It is recommended that you contact the sender or a customer service representative for assistance with resolving this issue.",
+      "refused": false,
+      "refusal_reason": null,
+      "cited": [
+        "customs-international#customs-holds"
+      ],
+      "warnings": [],
+      "top_similarity": 0.687,
+      "cited_gold": true,
+      "facts_ok": true,
+      "correct": true
+    },
+    {
+      "id": "q43",
+      "type": "code",
+      "question": "What is DP-235?",
+      "answer": "DP-235 means a sorting delay: the parcel missed its planned linehaul and will leave on the next one [1].",
+      "refused": false,
+      "refusal_reason": null,
+      "cited": [
+        "tracking-status-codes#pickup-and-depot-codes"
+      ],
+      "warnings": [],
+      "top_similarity": 0.656,
+      "cited_gold": true,
+      "facts_ok": true,
+      "correct": true
+    },
+    {
+      "id": "q45",
+      "type": "code",
+      "question": "What does DL-417 stand for?",
+      "answer": "DL-417 stands for \"Recipient was absent and new attempt planned\". [1]",
+      "refused": false,
+      "refusal_reason": null,
+      "cited": [
+        "tracking-status-codes#delivery-codes"
+      ],
+      "warnings": [],
+      "top_similarity": 0.748,
+      "cited_gold": true,
+      "facts_ok": true,
+      "correct": true
+    },
+    {
+      "id": "q47",
+      "type": "paraphrase",
+      "question": "How many days do we have to pay a bill?",
+      "answer": "Payment is due within 14 days of the invoice date [1]. \nThis timeframe applies to both bank transfers and card payments. \nThe exact number of days is not specified in the provided sources, but it can be inferred that payment must be made at least 13 days after the invoice date (since the first day of the month is when invoices are issued).",
+      "refused": false,
+      "refusal_reason": null,
+      "cited": [
+        "billing-invoices#invoice-schedule"
+      ],
+      "warnings": [
+        "Figures not found in the cited sources: 13"
+      ],
+      "top_similarity": 0.779,
+      "cited_gold": true,
+      "facts_ok": true,
+      "correct": true
+    },
+    {
+      "id": "q49",
+      "type": "direct",
+      "question": "How long do I have to dispute an invoice?",
+      "answer": "You must open a billing dispute within 30 days of the invoice date [1]. This timeframe applies from the invoice page in the portal or by writing to billing@kestrel-parcel.example. Disputing an invoice outside this time frame will not be considered valid. Lines that are not disputed remain due on the normal date [1].",
+      "refused": false,
+      "refusal_reason": null,
+      "cited": [
+        "billing-invoices#disputing-an-invoice"
+      ],
+      "warnings": [],
+      "top_similarity": 0.872,
+      "cited_gold": true,
+      "facts_ok": true,
+      "correct": true
+    },
+    {
+      "id": "q51",
+      "type": "direct",
+      "question": "What is the API rate limit?",
+      "answer": "Each API key may send 120 requests per minute [1]. If above that, the API answers with HTTP 429 and a Retry-After header.",
+      "refused": false,
+      "refusal_reason": null,
+      "cited": [
+        "api-integration#rate-limits"
+      ],
+      "warnings": [],
+      "top_similarity": 0.788,
+      "cited_gold": true,
+      "facts_ok": true,
+      "correct": true
+    },
+    {
+      "id": "q53",
+      "type": "paraphrase",
+      "question": "How do I avoid creating a duplicate shipment when my request is retried after a timeout?",
+      "answer": "To avoid creating a duplicate shipment, you should check if a shipment already exists before creating a new one [1]. If the endpoint returns an error with a 429 status code and a Retry-After header, wait for that amount of time before retrying your request. This will prevent multiple shipments from being created in quick succession due to retries [2].",
+      "refused": false,
+      "refusal_reason": null,
+      "cited": [
+        "webhooks#retries",
+        "api-integration#rate-limits"
+      ],
+      "warnings": [],
+      "top_similarity": 0.716,
+      "cited_gold": false,
+      "facts_ok": false,
+      "correct": false
+    },
+    {
+      "id": "q55",
+      "type": "direct",
+      "question": "How many shipments can the batch endpoint take?",
+      "answer": "The batch endpoint accepts up to 100 shipments in one request [1].",
+      "refused": false,
+      "refusal_reason": null,
+      "cited": [
+        "api-integration#rate-limits"
+      ],
+      "warnings": [],
+      "top_similarity": 0.791,
+      "cited_gold": true,
+      "facts_ok": true,
+      "correct": true
+    },
+    {
+      "id": "q57",
+      "type": "code",
+      "question": "What is in the X-Kestrel-Signature header?",
+      "answer": "The X-Kestrel-Signature header contains an HMAC-SHA256 of the raw request body, computed with the webhook secret [1].",
+      "refused": false,
+      "refusal_reason": null,
+      "cited": [
+        "webhooks#verifying-the-signature"
+      ],
+      "warnings": [],
+      "top_similarity": 0.825,
+      "cited_gold": true,
+      "facts_ok": true,
+      "correct": true
+    },
+    {
+      "id": "q59",
+      "type": "paraphrase",
+      "question": "Can we get past notifications sent again?",
+      "answer": "I could not find this in the documents.",
+      "refused": true,
+      "refusal_reason": "model",
+      "cited": [],
+      "warnings": [],
+      "top_similarity": 0.667,
+      "cited_gold": false,
+      "facts_ok": false,
+      "correct": false
+    },
+    {
+      "id": "q61",
+      "type": "paraphrase",
+      "question": "How much empty space is needed around the barcode?",
+      "answer": "A quiet zone of 6 mm free of text and tape on both sides of the main barcode is required [1]. This means there must be at least 3 mm of empty space above and below the barcode, for a total of 6 mm.",
+      "refused": false,
+      "refusal_reason": null,
+      "cited": [
+        "label-printing#barcode-quality"
+      ],
+      "warnings": [
+        "Figures not found in the cited sources: 3"
+      ],
+      "top_similarity": 0.765,
+      "cited_gold": true,
+      "facts_ok": true,
+      "correct": true
+    },
+    {
+      "id": "q63",
+      "type": "paraphrase",
+      "question": "I printed a label three weeks ago. Can I still use it?",
+      "answer": "No, an older label is rejected at the first scan and a new one has to be created [1]. The label must be used within 14 days of its creation. Since you printed the label three weeks ago, it is no longer valid. You need to create a new label.",
+      "refused": false,
+      "refusal_reason": null,
+      "cited": [
+        "label-printing#label-validity"
+      ],
+      "warnings": [],
+      "top_similarity": 0.813,
+      "cited_gold": true,
+      "facts_ok": true,
+      "correct": true
+    },
+    {
+      "id": "q65",
+      "type": "paraphrase",
+      "question": "Can staff get login codes by text message?",
+      "answer": "Staff cannot get login codes by text message [1]. Codes come from an authenticator app; SMS codes are not offered. Two-factor authentication is mandatory for the Owner and for every Admin. It is optional for Shippers and Viewers.",
+      "refused": false,
+      "refusal_reason": null,
+      "cited": [
+        "account-and-users#two-factor-authentication"
+      ],
+      "warnings": [],
+      "top_similarity": 0.625,
+      "cited_gold": true,
+      "facts_ok": true,
+      "correct": true
+    },
+    {
+      "id": "q67",
+      "type": "direct",
+      "question": "How many users does the Starter plan allow?",
+      "answer": "I could not find this in the documents.",
+      "refused": true,
+      "refusal_reason": "model",
+      "cited": [],
+      "warnings": [],
+      "top_similarity": 0.79,
+      "cited_gold": false,
+      "facts_ok": false,
+      "correct": false
+    },
+    {
+      "id": "q69",
+      "type": "paraphrase",
+      "question": "How fast should I expect a first answer to an email?",
+      "answer": "I could not find this in the documents.",
+      "refused": true,
+      "refusal_reason": "model",
+      "cited": [],
+      "warnings": [],
+      "top_similarity": 0.79,
+      "cited_gold": false,
+      "facts_ok": false,
+      "correct": false
+    },
+    {
+      "id": "q71",
+      "type": "direct",
+      "question": "When does a ticket go to tier 2?",
+      "answer": "A ticket that tier 1 has not solved after 1 business day goes to tier 2 [1].",
+      "refused": false,
+      "refusal_reason": null,
+      "cited": [
+        "support-hours-escalation#escalation-path"
+      ],
+      "warnings": [],
+      "top_similarity": 0.762,
+      "cited_gold": true,
+      "facts_ok": true,
+      "correct": true
+    },
+    {
+      "id": "q73",
+      "type": "direct",
+      "question": "When do I need a manifest for a drop-off?",
+      "answer": "A drop-off of more than 50 parcels needs a manifest, uploaded in the portal at least 2 hours before arrival [1].",
+      "refused": false,
+      "refusal_reason": null,
+      "cited": [
+        "depot-receiving#bulk-drop-offs"
+      ],
+      "warnings": [],
+      "top_similarity": 0.808,
+      "cited_gold": true,
+      "facts_ok": true,
+      "correct": true
+    },
+    {
+      "id": "q75",
+      "type": "direct",
+      "question": "What temperature does Kestrel Cool maintain?",
+      "answer": "I could not find this in the documents.",
+      "refused": true,
+      "refusal_reason": "model",
+      "cited": [],
+      "warnings": [],
+      "top_similarity": 0.849,
+      "cited_gold": false,
+      "facts_ok": false,
+      "correct": false
+    },
+    {
+      "id": "q77",
+      "type": "paraphrase",
+      "question": "How long should the ice packs be in the freezer beforehand?",
+      "answer": "Gel packs must be frozen for at least 24 hours before packing [1].",
+      "refused": false,
+      "refusal_reason": null,
+      "cited": [
+        "temperature-controlled#packing"
+      ],
+      "warnings": [],
+      "top_similarity": 0.766,
+      "cited_gold": true,
+      "facts_ok": true,
+      "correct": true
+    },
+    {
+      "id": "q79",
+      "type": "direct",
+      "question": "How long is recipient data kept?",
+      "answer": "Recipient names, addresses and phone numbers are kept for 24 months after delivery [1]. After that, they are anonymised. Phone numbers and email addresses of recipients are used only for delivery notifications, never for marketing [1]. There is no mention of a separate retention period for recipient data beyond the 24-month mark.",
+      "refused": false,
+      "refusal_reason": null,
+      "cited": [
+        "data-privacy-retention#recipient-data"
+      ],
+      "warnings": [],
+      "top_similarity": 0.901,
+      "cited_gold": true,
+      "facts_ok": true,
+      "correct": true
+    },
+    {
+      "id": "q81",
+      "type": "paraphrase",
+      "question": "Someone wants their personal information erased. What is the deadline to respond?",
+      "answer": "A person can ask for a copy of their data or for its deletion, and requests are answered within 30 days [1]. The response must be handled by the data protection officer at privacy@kestrel-parcel.example. There is no specific deadline mentioned in the provided sources for responding to such a request.",
+      "refused": false,
+      "refusal_reason": null,
+      "cited": [
+        "data-privacy-retention#data-requests"
+      ],
+      "warnings": [],
+      "top_similarity": 0.771,
+      "cited_gold": true,
+      "facts_ok": true,
+      "correct": true
+    },
+    {
+      "id": "q83",
+      "type": "direct",
+      "question": "When is the peak season?",
+      "answer": "The peak season runs from 15 November to 5 January [1]. During this period, several rules change [1]. The Express guarantee is suspended during the peak season [2]. A peak surcharge of 0.60 EUR per parcel applies to all services during the peak period [3].",
+      "refused": false,
+      "refusal_reason": null,
+      "cited": [
+        "peak-season#peak-period",
+        "peak-season#changes-to-services",
+        "peak-season#peak-surcharge"
+      ],
+      "warnings": [],
+      "top_similarity": 0.864,
+      "cited_gold": true,
+      "facts_ok": true,
+      "correct": true
+    },
+    {
+      "id": "q85",
+      "type": "direct",
+      "question": "How much is the peak surcharge?",
+      "answer": "A peak surcharge of 0.60 EUR per parcel applies to all services during the peak period [1]. This surcharge is shown as a separate line on the invoice. The amount remains constant throughout the peak season, regardless of changes in fuel prices or volumes [4]. There are no variations in the peak surcharge amount during this time.",
+      "refused": false,
+      "refusal_reason": null,
+      "cited": [
+        "peak-season#peak-surcharge",
+        "peak-season#peak-period"
+      ],
+      "warnings": [],
+      "top_similarity": 0.85,
+      "cited_gold": true,
+      "facts_ok": true,
+      "correct": true
+    },
+    {
+      "id": "u01",
+      "type": "unanswerable",
+      "question": "What is the price of a Standard parcel up to 5 kg?",
+      "answer": "I could not find this in the documents.",
+      "refused": true,
+      "refusal_reason": "model",
+      "cited": [],
+      "warnings": [],
+      "top_similarity": 0.747,
+      "correct": true
+    },
+    {
+      "id": "u02",
+      "type": "unanswerable",
+      "question": "Does Kestrel deliver to Canada?",
+      "answer": "I could not find this in the documents.",
+      "refused": true,
+      "refusal_reason": "model",
+      "cited": [],
+      "warnings": [],
+      "top_similarity": 0.776,
+      "correct": true
+    },
+    {
+      "id": "u03",
+      "type": "unanswerable",
+      "question": "How do I apply for a job as a Kestrel driver?",
+      "answer": "I could not find this in the documents.",
+      "refused": true,
+      "refusal_reason": "model",
+      "cited": [],
+      "warnings": [],
+      "top_similarity": 0.697,
+      "correct": true
+    },
+    {
+      "id": "u04",
+      "type": "unanswerable",
+      "question": "What is the name of Kestrel's chief executive?",
+      "answer": "I could not find this in the documents.",
+      "refused": true,
+      "refusal_reason": "model",
+      "cited": [],
+      "warnings": [],
+      "top_similarity": 0.623,
+      "correct": true
+    },
+    {
+      "id": "u05",
+      "type": "unanswerable",
+      "question": "What is the phone number of customer support?",
+      "answer": "I could not find this in the documents.",
+      "refused": true,
+      "refusal_reason": "model",
+      "cited": [],
+      "warnings": [],
+      "top_similarity": 0.766,
+      "correct": true
+    },
+    {
+      "id": "u06",
+      "type": "unanswerable",
+      "question": "Which programming languages have an official SDK?",
+      "answer": "I could not find this in the documents.",
+      "refused": true,
+      "refusal_reason": "gate",
+      "cited": [],
+      "warnings": [],
+      "top_similarity": 0.54,
+      "correct": true
+    },
+    {
+      "id": "u07",
+      "type": "unanswerable",
+      "question": "How much CO2 does one parcel emit?",
+      "answer": "I could not find this in the documents.",
+      "refused": true,
+      "refusal_reason": "model",
+      "cited": [],
+      "warnings": [],
+      "top_similarity": 0.705,
+      "correct": true
+    },
+    {
+      "id": "u08",
+      "type": "unanswerable",
+      "question": "What discount do I get for shipping more than 10,000 parcels a month?",
+      "answer": "I could not find this in the documents.",
+      "refused": true,
+      "refusal_reason": "model",
+      "cited": [],
+      "warnings": [],
+      "top_similarity": 0.716,
+      "correct": true
+    },
+    {
+      "id": "u09",
+      "type": "unanswerable",
+      "question": "Does the mobile app have a dark mode?",
+      "answer": "I could not find this in the documents.",
+      "refused": true,
+      "refusal_reason": "gate",
+      "cited": [],
+      "warnings": [],
+      "top_similarity": 0.516,
+      "correct": true
+    },
+    {
+      "id": "u10",
+      "type": "unanswerable",
+      "question": "Who won the football world cup in 2018?",
+      "answer": "I could not find this in the documents.",
+      "refused": true,
+      "refusal_reason": "gate",
+      "cited": [],
+      "warnings": [],
+      "top_similarity": 0.451,
+      "correct": true
+    },
+    {
+      "id": "u11",
+      "type": "unanswerable",
+      "question": "What is the capital of Australia?",
+      "answer": "I could not find this in the documents.",
+      "refused": true,
+      "refusal_reason": "gate",
+      "cited": [],
+      "warnings": [],
+      "top_similarity": 0.478,
+      "correct": true
+    },
+    {
+      "id": "u12",
+      "type": "unanswerable",
+      "question": "How many depots does Kestrel operate?",
+      "answer": "I could not find this in the documents.",
+      "refused": true,
+      "refusal_reason": "model",
+      "cited": [],
+      "warnings": [],
+      "top_similarity": 0.753,
+      "correct": true
+    },
+    {
+      "id": "u13",
+      "type": "unanswerable",
+      "question": "Which vehicle models are in the delivery fleet?",
+      "answer": "I could not find this in the documents.",
+      "refused": true,
+      "refusal_reason": "model",
+      "cited": [],
+      "warnings": [],
+      "top_similarity": 0.624,
+      "correct": true
+    },
+    {
+      "id": "u14",
+      "type": "unanswerable",
+      "question": "What is the GraphQL endpoint of the API?",
+      "answer": "I could not find this in the documents.",
+      "refused": true,
+      "refusal_reason": "model",
+      "cited": [],
+      "warnings": [],
+      "top_similarity": 0.647,
+      "correct": true
+    }
+  ]
+}

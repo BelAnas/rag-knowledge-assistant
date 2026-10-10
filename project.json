@@ -5,22 +5,24 @@
   "title": "RAG knowledge assistant with citations",
   "tagline": "Question answering over company documents with hybrid search, reranking, cited answers and a measured retrieval report.",
   "category": "RAG",
-  "status": "building",
+  "status": "done",
   "started": "2026-10-10",
-  "finished": "",
-  "pitch": "I built an assistant that answers staff questions from a company's own documents and shows where every sentence came from. It searches two ways at once, by meaning and by exact words, then a second model re-reads the best candidates and puts the right passage first. If the documents do not contain the answer, it says so instead of guessing. I do not ask you to trust it: the repository has a retrieval report measured on a public benchmark and on a question set for the demo handbook, and you can rerun both with one command.",
+  "finished": "2026-10-10",
+  "pitch": "I built an assistant that answers staff questions from a company's own documents and shows where every sentence came from. It searches two ways at once, by meaning and by exact words, and if the documents do not contain the answer it says so instead of guessing. What I am proud of is that I measured every part on a public benchmark instead of assuming. The measurements changed the design: the standard way of merging the two searches added nothing, so I replaced it, and the reranking model that every tutorial adds made results worse, so I switched it off. You can rerun every number with one command, and I would run the same tests on your documents.",
   "problem": "Companies keep their knowledge in handbooks, procedures and manuals that nobody has time to read. Staff ask a colleague or guess. A plain chatbot makes things worse, because it answers from memory and invents details that sound right. A search box returns ten documents and leaves the reading to the user.",
-  "solution": "A retrieval-augmented generation (RAG) service for a fictional parcel carrier's operations handbook. Documents are split by heading into passages, indexed for keyword search (BM25) and for meaning search (embeddings in Qdrant). A question runs through both searches, the two result lists are fused, a cross-encoder reranks the top candidates, and the language model writes an answer only from the passages it was given, with a numbered citation after each claim. A relevance gate refuses questions the documents do not cover. An evaluation script measures each retrieval stage separately so the value of every component is a number, not an opinion.",
+  "solution": "A retrieval-augmented generation (RAG) service for a fictional parcel carrier's operations handbook. Documents are split by heading into passages and indexed twice: for keyword search (BM25) and for meaning search (embeddings in Qdrant). A question runs through both searches and the results are merged by weighted score fusion. A similarity gate refuses clearly off-topic questions before the model is called. Otherwise the language model writes an answer only from four numbered passages, with a citation after each claim, and the code checks those citations. An evaluation suite measures each retrieval stage on a public benchmark and on 100 handbook questions; those measurements chose the fusion method and showed that the planned reranker made results worse, so it is optional and off.",
   "features": [
-    "Hybrid search: keyword search (BM25) and meaning search (embeddings) run together and their results are fused",
-    "Reranking of the best candidates with a cross-encoder model that runs on CPU",
-    "Answers with numbered citations that link to the exact document and section",
-    "Citation check: a citation that points to a passage the model was not given is removed and the answer is flagged",
-    "Refusal when the documents do not contain the answer, decided before the language model is called",
+    "Hybrid search: keyword search (BM25) and meaning search (embeddings in Qdrant) run together and are merged by weighted score fusion",
+    "Answers with numbered citations that point to the exact document and section",
+    "Citation check: a citation to a passage the model was not given is removed, and uncited answers and figures missing from the cited passages are flagged",
+    "Refusal when nothing relevant is found, decided before the language model is called",
     "A retrieval report comparing keyword, meaning, hybrid and reranked search on a public benchmark (BEIR SciFact) and on the demo handbook",
-    "An answer report: correct source cited, expected facts present, refusals on out-of-scope questions",
-    "A web page that shows the answer, the sources, and how each passage ranked at every stage",
-    "Runs with no API key: an offline answer writer and a tiny built-in embedder for the tests"
+    "A tuning script that chooses the fusion weight on training queries and reports it on separate test queries",
+    "An answer report on 100 questions: right passage cited, expected fact present, refusals on out-of-scope questions",
+    "An optional cross-encoder reranker, measured and off by default",
+    "A web page that shows the answer, the passages, how each one ranked in each search, and a timing and cost trace",
+    "Runs with no API key and on CPU only; the index rebuilds itself when documents change",
+    "Works with OpenAI or any OpenAI-compatible server, including local models through Ollama"
   ],
   "stack": [
     {
@@ -35,8 +37,8 @@
     },
     {
       "name": "fastembed (ONNX Runtime)",
-      "role": "Runs the embedding model (bge-small-en-v1.5) and the reranker (a MiniLM cross-encoder) on CPU.",
-      "why": "It gives the same models as sentence-transformers without PyTorch, so the install is about 230 MB instead of several GB and it starts fast on a small server."
+      "role": "Runs the embedding model (bge-small-en-v1.5) on CPU, and the optional reranker.",
+      "why": "It gives the same models as sentence-transformers without PyTorch, so the install is about 250 MB instead of several GB and it starts fast on a small server."
     },
     {
       "name": "BM25 (own implementation, about 80 lines)",
@@ -44,9 +46,9 @@
       "why": "Exact words such as error codes and product numbers are where embeddings fail. The code is short enough to read and has no extra dependency."
     },
     {
-      "name": "Reciprocal rank fusion",
-      "role": "Merges the keyword list and the meaning list into one ranking.",
-      "why": "It uses only the rank positions, so there are no score scales to tune between two very different searches."
+      "name": "Weighted score fusion",
+      "role": "Merges the keyword list and the meaning list into one ranking: 70% meaning, 30% keyword.",
+      "why": "On the public benchmark's training queries it beat reciprocal rank fusion, the usual default (0.770 against 0.752 nDCG@10)."
     },
     {
       "name": "OpenAI Chat Completions API",
@@ -62,10 +64,92 @@
       "name": "pytest",
       "role": "Automated tests that run offline in seconds.",
       "why": "The standard Python test runner."
+    },
+    {
+      "name": "BEIR SciFact",
+      "role": "The public benchmark used to measure retrieval and to choose the fusion weight.",
+      "why": "Independent human labels, so the numbers are not from questions I wrote myself."
     }
   ],
-  "keywords": [],
-  "topics": [],
+  "keywords": [
+    "RAG",
+    "retrieval-augmented generation",
+    "retrieval augmented generation",
+    "knowledge base",
+    "knowledge assistant",
+    "chat with your documents",
+    "document Q&A",
+    "question answering",
+    "internal search",
+    "enterprise search",
+    "hybrid search",
+    "semantic search",
+    "keyword search",
+    "BM25",
+    "vector database",
+    "vector search",
+    "Qdrant",
+    "embeddings",
+    "sentence embeddings",
+    "bge-small",
+    "fastembed",
+    "ONNX",
+    "reranking",
+    "reranker",
+    "cross-encoder",
+    "reciprocal rank fusion",
+    "RRF",
+    "score fusion",
+    "citations",
+    "source attribution",
+    "grounded answers",
+    "hallucination",
+    "refusal",
+    "chunking",
+    "document splitting",
+    "retrieval evaluation",
+    "nDCG",
+    "MRR",
+    "recall",
+    "BEIR",
+    "SciFact",
+    "benchmark",
+    "LLM",
+    "OpenAI API",
+    "Ollama",
+    "local LLM",
+    "FastAPI",
+    "Python",
+    "pytest",
+    "Docker",
+    "GitHub Actions",
+    "CPU inference",
+    "handbook",
+    "SOP",
+    "policy documents",
+    "helpdesk",
+    "onboarding",
+    "LangChain alternative",
+    "LlamaIndex alternative",
+    "Pinecone alternative"
+  ],
+  "topics": [
+    "rag",
+    "retrieval-augmented-generation",
+    "hybrid-search",
+    "semantic-search",
+    "bm25",
+    "qdrant",
+    "embeddings",
+    "reranking",
+    "vector-database",
+    "llm",
+    "question-answering",
+    "citations",
+    "information-retrieval",
+    "fastapi",
+    "python"
+  ],
   "workflow": [
     {
       "step": "Load and split",
@@ -81,15 +165,15 @@
     },
     {
       "step": "Hybrid retrieval",
-      "detail": "Both searches return their best passages. Reciprocal rank fusion merges the two lists into one list of candidates."
+      "detail": "Both searches return their 20 best passages. Each list is rescaled to 0-1 and the scores are mixed, 70% meaning and 30% keyword, into one ranking."
     },
     {
-      "step": "Rerank",
-      "detail": "A cross-encoder reads the question together with each candidate and gives a relevance score. The candidates are reordered by that score."
+      "step": "Rerank (optional, off by default)",
+      "detail": "When switched on, a cross-encoder reads the question together with each candidate and reorders them. It is off because it measured worse and slower on the benchmark."
     },
     {
       "step": "Relevance gate",
-      "detail": "If the best score is under a threshold, the assistant replies that the documents do not cover the question and the language model is not called."
+      "detail": "If the best similarity between the question and any passage is under 0.60, the assistant replies that the documents do not cover the question and the language model is not called."
     },
     {
       "step": "Answer",
@@ -140,7 +224,7 @@
           "done": true
         },
         {
-          "text": "Fuse keyword and meaning results with reciprocal rank fusion",
+          "text": "Fuse keyword and meaning results (rank fusion first, weighted score fusion after measuring)",
           "done": true
         },
         {
@@ -184,28 +268,32 @@
     {
       "name": "Evaluation",
       "goal": "Numbers for every retrieval stage and for the answers.",
-      "status": "doing",
-      "outcome": "",
+      "status": "done",
+      "outcome": "A 100-question set for the handbook and the public SciFact benchmark, with three scripts. Hybrid search reaches 0.742 nDCG@10 on SciFact against 0.720 for meaning search and 0.673 for keyword search. The fusion weight was chosen on 809 training queries. The small reranker lowered the score to 0.703 and was switched off by default; the refusal gate was moved from the reranker score to the similarity score after a threshold sweep.",
       "steps": [
         {
           "text": "Write the handbook question set with the correct passage for each question",
-          "done": false
+          "done": true
         },
         {
           "text": "Add a script that downloads the public BEIR SciFact benchmark",
-          "done": false
+          "done": true
         },
         {
           "text": "Measure recall, MRR and nDCG for keyword, meaning, hybrid and reranked search",
-          "done": false
+          "done": true
         },
         {
           "text": "Measure answers: correct source cited, expected facts present, refusals",
-          "done": false
+          "done": true
         },
         {
           "text": "Compare reranker models and keep the one the numbers support",
-          "done": false
+          "done": true
+        },
+        {
+          "text": "Choose the fusion method on training queries of the public benchmark",
+          "done": true
         }
       ]
     },
@@ -232,43 +320,549 @@
     {
       "name": "Verification and documentation",
       "goal": "Proof that it works and a README a client can follow.",
-      "status": "todo",
-      "outcome": "",
+      "status": "done",
+      "outcome": "67 passed offline. The CLI, the server and the Docker image were run for real. Answers were evaluated on a local llama3.2 model. README with diagram, real output and result tables; dashboard entry complete; no secrets in tracked files. The OpenAI check is pending because no key was available.",
       "steps": [
         {
           "text": "Run the test suite offline",
-          "done": false
+          "done": true
         },
         {
           "text": "Run the project from a clean shell the way the README says",
-          "done": false
+          "done": true
         },
         {
-          "text": "Run the answer evaluation on a real language model",
-          "done": false
+          "text": "Run the answer evaluation on a real language model (local llama3.2; OpenAI pending, no key)",
+          "done": true
         },
         {
           "text": "Write the README with a diagram, real output and the results table",
-          "done": false
+          "done": true
         },
         {
           "text": "Complete the dashboard entry and check for secrets",
-          "done": false
+          "done": true
         }
       ]
     }
   ],
-  "decisions": [],
-  "results": [],
-  "client_qa": [],
-  "concepts": [],
-  "limits": [],
-  "run": [],
-  "files": [],
+  "decisions": [
+    {
+      "title": "How to merge keyword and meaning results",
+      "chosen": "Weighted score fusion: 70% meaning search, 30% keyword search, after rescaling each list to 0-1.",
+      "why": "I scored every option on 809 training queries of the public SciFact benchmark and kept the best one. It then scored 0.742 nDCG@10 on the 300 test queries, against 0.720 for meaning search alone and 0.673 for keyword search alone. The weight was never tuned on the questions I report.",
+      "alternatives": [
+        {
+          "option": "Reciprocal rank fusion (the usual default)",
+          "why_not": "It needs no tuning, but on the training queries it gave 0.752, exactly the same as meaning search alone, and 0.724 on the test queries. It throws away how far ahead the best result is."
+        },
+        {
+          "option": "Meaning search alone",
+          "why_not": "It is the best choice on my own handbook questions (0.957 against 0.929), but it loses on the public benchmark and it is the search that confuses similar codes and part numbers. One setting (DENSE_WEIGHT=1.0) switches to it."
+        },
+        {
+          "option": "Tune the weight on the handbook questions",
+          "why_not": "That would be marking my own homework: 86 questions I wrote myself, with nothing left to test on."
+        }
+      ],
+      "at_scale": "Re-run the tuning script on a few hundred real questions from the client's own users. The right weight depends on how much of their content is codes and names."
+    },
+    {
+      "title": "Whether to rerank",
+      "chosen": "The reranker is built in but switched off by default.",
+      "why": "I planned to ship it on. Then I measured it. On the public benchmark the small MiniLM cross-encoder lowered nDCG@10 from 0.742 to 0.703 and raised the time per query from 62 ms to 1.7 seconds. On the handbook it did not help either. A component that costs time and lowers quality should not be on.",
+      "alternatives": [
+        {
+          "option": "MiniLM cross-encoder always on (what most tutorials do)",
+          "why_not": "Measured worse on both datasets and 28 times slower on the benchmark."
+        },
+        {
+          "option": "bge-reranker-base, a larger reranker",
+          "why_not": "On the handbook it reached 90.7% first-place accuracy against 84.9% for hybrid alone, but still under meaning search alone (91.9%), and it took 1.5 seconds per question on this CPU. I could not measure it on the public benchmark in reasonable time."
+        },
+        {
+          "option": "A hosted reranking API (Cohere, Jina)",
+          "why_not": "Likely the strongest option, but it adds a paid dependency and sends document text to a third party. It was not measured here."
+        }
+      ],
+      "at_scale": "With a GPU or a hosted reranker the latency cost disappears, so I would measure a large reranker on the client's questions and turn it on only if the numbers improve."
+    },
+    {
+      "title": "Embedding model and how to run it",
+      "chosen": "bge-small-en-v1.5 (384 dimensions) through fastembed, which runs it on ONNX Runtime.",
+      "why": "It is a small model that is strong for its size, it runs on a CPU, and with fastembed the whole install is about 250 MB with no PyTorch. A question is embedded in about 10 ms.",
+      "alternatives": [
+        {
+          "option": "sentence-transformers with PyTorch",
+          "why_not": "Same models, but a multi-gigabyte install and slower start. Nothing here needs PyTorch."
+        },
+        {
+          "option": "OpenAI embeddings API",
+          "why_not": "Good quality, but then the project cannot run without a key, every document is sent to a third party, and re-indexing costs money."
+        },
+        {
+          "option": "A large multilingual model such as bge-m3",
+          "why_not": "Much slower on CPU: the small model already needed 19 minutes for 5,183 abstracts on this machine. It is the right choice when documents are not in English."
+        }
+      ],
+      "at_scale": "For multilingual or very large collections, a larger model on a GPU or a hosted embedding API, with the index rebuilt once."
+    },
+    {
+      "title": "Where to store the vectors",
+      "chosen": "Qdrant in embedded local mode, on disk, with a setting to point at a Qdrant server.",
+      "why": "The demo runs with no Docker and no service to start, and moving to a real Qdrant server is a change of one setting, not a rewrite, because the client code is the same.",
+      "alternatives": [
+        {
+          "option": "FAISS or a NumPy array",
+          "why_not": "Fast, but it is only an index: no payloads, no filtering, no server mode, so production would mean replacing it."
+        },
+        {
+          "option": "Chroma",
+          "why_not": "A fair choice for a demo. Qdrant has the stronger production story (filtering, quantisation, clustering) and clients ask for it by name."
+        },
+        {
+          "option": "pgvector in PostgreSQL",
+          "why_not": "The right choice when the client already runs Postgres and wants one database. It needs a database server, which breaks the one-command run."
+        },
+        {
+          "option": "Pinecone or another hosted service",
+          "why_not": "Needs an account and a key, and puts the client's documents on a third-party service."
+        }
+      ],
+      "at_scale": "A Qdrant server or cluster, with payload filters for per-user permissions and quantisation to cut memory. The embedded mode is for one process and small collections."
+    },
+    {
+      "title": "How to split documents",
+      "chosen": "At Markdown headings, with a 200-word cap, and the document title and heading attached to every passage.",
+      "why": "A heading is where the author changed subject, so each passage is one complete rule. Attaching the title matters: 'It costs 9 EUR per parcel' is only findable if the index knows which service 'it' is.",
+      "alternatives": [
+        {
+          "option": "Fixed-size pieces of N characters with overlap",
+          "why_not": "Simple, but it cuts rules in half and mixes two subjects in one passage, which hurts both retrieval and citations."
+        },
+        {
+          "option": "Semantic chunking with a model",
+          "why_not": "More moving parts and slower indexing, with no clear gain on documents that already have good headings."
+        },
+        {
+          "option": "Whole documents",
+          "why_not": "Too vague to match a specific question and too long to send four of them to the model."
+        }
+      ],
+      "at_scale": "Real documents are PDFs, Word files and web pages with tables. They need a parsing step before this splitter, and that step usually decides the quality of the whole system."
+    },
+    {
+      "title": "How to refuse when the documents have no answer",
+      "chosen": "Two layers: a similarity gate before the model for clearly off-topic questions, and an instruction to the model to refuse when the passages do not contain the answer.",
+      "why": "The gate costs nothing, saves the model call and cannot be argued with. But the threshold sweep shows its limit honestly: at a setting that refuses no good question it stops only 4 of 14 out-of-scope questions, because an on-topic question with no answer looks just like a real one. Those are left to the model.",
+      "alternatives": [
+        {
+          "option": "Trust the model's instruction alone",
+          "why_not": "Works often, costs a model call every time, and depends on the model obeying."
+        },
+        {
+          "option": "A strict gate (threshold 0.70)",
+          "why_not": "It would stop 8 of 14 out-of-scope questions but wrongly refuse 17 of 86 good ones. Refusing real questions makes people stop using the tool."
+        },
+        {
+          "option": "Gate on the reranker score",
+          "why_not": "I tried it first. The small reranker gave low scores to correct passages for rephrased questions: in the threshold sweep I ran with it during the build, a threshold of zero wrongly refused 21 of 86 good questions. That run was made before the gate was changed, so the current sweep command no longer prints it."
+        }
+      ],
+      "at_scale": "Add a second model call that checks the draft answer against the passages, and log refused questions: they are the list of what is missing from the documentation."
+    },
+    {
+      "title": "Framework or plain code",
+      "chosen": "Plain Python. The whole pipeline is about 1,000 lines, comments included, in eleven small files.",
+      "why": "Every step is visible and testable, and the evaluation can measure each stage separately. That is what let me find that the reranker was hurting.",
+      "alternatives": [
+        {
+          "option": "LangChain",
+          "why_not": "Quick to start, but the retrieval steps sit behind abstractions that change often, and measuring one stage in isolation is harder."
+        },
+        {
+          "option": "LlamaIndex",
+          "why_not": "Strong for document loading and many index types. For one clear pipeline it adds more than it removes."
+        }
+      ],
+      "at_scale": "If the client's team already uses LangChain or LlamaIndex, the same design fits inside it. The choices and the measurements carry over; the code is small enough to port."
+    },
+    {
+      "title": "How to prove it works",
+      "chosen": "A public benchmark with human labels for retrieval, plus a 100-question set for the demo handbook, with settings tuned on training queries only.",
+      "why": "Numbers on questions I wrote myself are easy to make look good. SciFact is independent: 300 claims labelled by people, used in published research, so the result can be compared with other systems.",
+      "alternatives": [
+        {
+          "option": "Only my own handbook questions",
+          "why_not": "A client has no reason to trust them, and they turned out to favour meaning search because I rephrased many on purpose."
+        },
+        {
+          "option": "An LLM as judge of answer quality",
+          "why_not": "Useful, but it costs money per run and needs its own validation. The checks here (right passage cited, expected fact present) are exact and free."
+        },
+        {
+          "option": "No evaluation, a demo video",
+          "why_not": "A demo shows five questions that work. It says nothing about the sixth."
+        }
+      ],
+      "at_scale": "Collect real user questions, label a few hundred with the right passage, and run the evaluation on every change to documents, models or settings."
+    }
+  ],
+  "results": [
+    {
+      "metric": "Automated tests",
+      "value": "67 passed",
+      "how": "`.venv/bin/pytest -q` (offline, no key, no model download)"
+    },
+    {
+      "metric": "Public benchmark, hybrid search (the default), nDCG@10",
+      "value": "0.742",
+      "how": "`python -m evals.retrieval --dataset scifact --rerankers Xenova/ms-marco-MiniLM-L-6-v2` (300 public test queries over 5,183 abstracts)"
+    },
+    {
+      "metric": "Public benchmark, meaning search alone, nDCG@10",
+      "value": "0.720",
+      "how": "Same run."
+    },
+    {
+      "metric": "Public benchmark, keyword search alone, nDCG@10",
+      "value": "0.673",
+      "how": "Same run."
+    },
+    {
+      "metric": "Public benchmark, hybrid plus the small reranker, nDCG@10",
+      "value": "0.703 (worse than without it, and 1724.7 ms per query instead of 62.3 ms)",
+      "how": "Same run. This is why the reranker is off by default."
+    },
+    {
+      "metric": "Public benchmark, hybrid search, right abstract in first place",
+      "value": "63.0% (keyword 55.0%, meaning 60.3%)",
+      "how": "Same run, Hit@1."
+    },
+    {
+      "metric": "Fusion weight chosen on training queries",
+      "value": "0.7 meaning, 0.3 keyword: nDCG@10 0.770 on 809 training queries, against 0.752 for rank fusion and 0.752 for meaning search alone",
+      "how": "`python -m evals.tune_fusion`"
+    },
+    {
+      "metric": "Handbook, right passage among the 4 given to the model (default hybrid)",
+      "value": "96.5% (83 of 86 questions)",
+      "how": "`python -m evals.retrieval --dataset handbook --rerankers Xenova/ms-marco-MiniLM-L-6-v2,BAAI/bge-reranker-base` (86 questions over 85 passages)"
+    },
+    {
+      "metric": "Handbook, right passage in first place",
+      "value": "hybrid 84.9%, meaning alone 91.9%, keyword alone 66.3%, hybrid plus bge-reranker-base 90.7%",
+      "how": "Same run, Hit@1."
+    },
+    {
+      "metric": "Handbook, rephrased questions, right passage first",
+      "value": "keyword 31%, meaning 87%, hybrid 67%",
+      "how": "Same run, 39 questions written to share few words with the answer."
+    },
+    {
+      "metric": "Retrieval speed, handbook, hybrid",
+      "value": "8.7 ms median per question",
+      "how": "Same run, on a 4-core 2014 Xeon, CPU only."
+    },
+    {
+      "metric": "Refusal gate at the default threshold 0.60",
+      "value": "0 of 86 answerable questions wrongly refused, 4 of 14 out-of-scope questions stopped before the model",
+      "how": "`python -m evals.answers --gate-sweep`"
+    },
+    {
+      "metric": "Answers, offline writer (no model)",
+      "value": "65 of 86 answerable correct, 4 of 14 out-of-scope refused",
+      "how": "`python -m evals.answers`. The offline writer only quotes the top passage, so this measures the pipeline, not answer quality."
+    },
+    {
+      "metric": "Answers, local llama3.2 (3B) model, answerable questions",
+      "value": "33 of 43 correct; right passage cited in 33; 9 wrongly refused",
+      "how": "`LLM_PROVIDER=openai OPENAI_BASE_URL=http://localhost:11434/v1 OPENAI_MODEL=llama3.2-cpu MAX_OUTPUT_TOKENS=200 python -m evals.answers --limit 43` (a sample of 43 evenly spaced answerable questions plus the 14 out-of-scope ones)"
+    },
+    {
+      "metric": "Answers, local llama3.2 (3B) model, out-of-scope questions",
+      "value": "14 of 14 refused (4 by the gate, the rest by the model)",
+      "how": "Same run."
+    },
+    {
+      "metric": "Tokens per answer, llama3.2",
+      "value": "about 433 tokens in and out",
+      "how": "Same run: total tokens divided by the number of model calls."
+    }
+  ],
+  "client_qa": [
+    {
+      "q": "Will it make things up?",
+      "a": "Much less than a plain chatbot, and when it does you can see it. The model is only allowed to answer from the passages it was given, every sentence carries a citation you can click, and my code removes citations that point to nothing and flags answers whose figures are not in the cited text. If nothing relevant is found it says it could not find the answer. I do not promise zero errors, I promise that every answer can be checked in seconds."
+    },
+    {
+      "q": "How do I know it finds the right information?",
+      "a": "I measured it. On a public research benchmark of 5,183 documents it puts the right document first for 63% of queries, better than keyword search (55%) or meaning search (60%) alone. On the demo handbook the right passage is among the four given to the model for 96.5% of 86 questions. You can rerun both with one command, and I would run the same test on your documents with your questions."
+    },
+    {
+      "q": "Can it work on our documents, and how long does that take?",
+      "a": "Yes. The demo reads Markdown files from a folder. For your documents I add a conversion step for your formats (PDF, Word, Confluence, SharePoint), which is usually the largest part of the work. A first version on a few hundred documents is days, not months. Then we collect real questions and measure."
+    },
+    {
+      "q": "Is our data sent to OpenAI?",
+      "a": "Only if you choose that. Search and indexing run entirely on your own machine: the embedding model is local. Only the final step, writing the answer, uses a language model, and that can be OpenAI, Azure in your own tenant, or a model running on your own server through Ollama. I tested it with a local model."
+    },
+    {
+      "q": "What does it cost to run?",
+      "a": "Search costs nothing per question: it runs on a normal CPU server. Each answer sends about four short passages to the language model, a few hundred tokens. On gpt-4o-mini's public prices that is a small fraction of a cent per question; I have not run it on OpenAI in this build, so I will not quote a measured figure. The trace on every answer shows the tokens and the cost."
+    },
+    {
+      "q": "What happens when a document changes?",
+      "a": "The index notices. It keeps a fingerprint of the documents, and when a file is added or edited it rebuilds itself on the next start. For large collections I would update only the changed documents instead of rebuilding everything, which is a small change."
+    },
+    {
+      "q": "Everyone has a RAG demo. Why is yours better than the first tutorial on YouTube?",
+      "a": "Because I measured each part instead of assuming. Two examples: the usual way to merge the two searches added nothing over one search on the benchmark, so I replaced it with one that added two points. And the reranker that every tutorial adds made results worse and 28 times slower here, so I turned it off. Most demos cannot tell you whether their parts help, because they never measured them separately."
+    },
+    {
+      "q": "Your own test shows meaning search alone beating your hybrid on the handbook. Why keep hybrid?",
+      "a": "It is true and it is in the README. Those 86 questions are mine, and I rephrased 39 of them on purpose so that they share few words with the answer, which is the hardest case for keyword search. On the independent benchmark hybrid wins. I kept the setting chosen on public training data instead of fitting it to my own questions. For your documents I would decide with your questions, and it is one setting."
+    },
+    {
+      "q": "What is hybrid search and why do I need it?",
+      "a": "Two searches at once. One matches meaning, so 'my parcel is late' finds the passage about delivery guarantees. The other matches exact words, so 'PU-204' finds that code and not a similar one. Staff ask both kinds of question, and each search fails on the other kind."
+    },
+    {
+      "q": "Which vector database do you use, and can you use ours?",
+      "a": "Qdrant here, embedded in the program for the demo and switchable to a Qdrant server with one setting. The vector store is behind two small functions, so pgvector, Pinecone, Weaviate or Elasticsearch is a contained change. I chose Qdrant because it runs with no setup for a demo and scales to production."
+    },
+    {
+      "q": "Does it need a GPU?",
+      "a": "No. Everything here ran on a ten-year-old 4-core CPU: a question is searched in about 10 milliseconds on the handbook. Indexing is the slow part on CPU (19 minutes for 5,183 abstracts on that machine), and it is done once. A GPU matters only for very large collections or for a large reranker."
+    },
+    {
+      "q": "Can it restrict documents by user or department?",
+      "a": "Not in this demo, and I say so in the limits. The design supports it: each passage is stored in Qdrant with metadata, so a filter on department or access group can be applied at search time. It needs your login system to tell the service who is asking."
+    },
+    {
+      "q": "How do you handle questions the documents do not answer?",
+      "a": "Two layers. If nothing in the index is similar to the question, it refuses before any model is called. If the question is on topic but the answer is not written anywhere, the model is instructed to say so. I measured the first layer honestly: it stops clearly off-topic questions and not on-topic ones, so the second layer does that work. Refused questions are also useful: they show what your documentation is missing."
+    },
+    {
+      "q": "Can it answer in other languages?",
+      "a": "The default models are English only. For other languages I would switch to a multilingual embedding model, which is a setting plus a re-index, and measure again. I have not measured that in this project."
+    }
+  ],
+  "concepts": [
+    {
+      "term": "RAG (retrieval-augmented generation)",
+      "plain": "Before the language model answers, the system searches your documents and hands the model the few passages that matter. The model writes the answer from those passages instead of from its memory."
+    },
+    {
+      "term": "Hallucination",
+      "plain": "A language model stating something false in a confident tone. RAG reduces it by giving the model the real text, and citations make what is left easy to catch."
+    },
+    {
+      "term": "Chunk (passage)",
+      "plain": "A small piece of a document, here one section under a heading. Search works on chunks because a whole document is too large to hand to the model and too vague to match a specific question."
+    },
+    {
+      "term": "Embedding",
+      "plain": "A list of numbers (384 here) that a model produces for a text so that texts with similar meaning get similar numbers. It lets the system match 'my parcel is late' with a passage about delays even when no word is shared."
+    },
+    {
+      "term": "Vector database (Qdrant)",
+      "plain": "A database built to store embeddings and return the ones closest to a query embedding very quickly. Qdrant is an open-source one that runs embedded in the program or as a server."
+    },
+    {
+      "term": "Semantic search (meaning search, dense retrieval)",
+      "plain": "Search that compares embeddings instead of words. It understands rephrasing, and it is weak on exact strings such as codes."
+    },
+    {
+      "term": "BM25 (keyword search, sparse retrieval)",
+      "plain": "The classic search formula: a passage scores higher when it contains the query's words, and rare words count more than common ones. It is exact on codes and names and blind to synonyms."
+    },
+    {
+      "term": "Hybrid search",
+      "plain": "Running keyword search and meaning search together and merging the results, so each covers the other's weakness."
+    },
+    {
+      "term": "Fusion (reciprocal rank fusion and weighted fusion)",
+      "plain": "The step that merges two result lists into one. Rank fusion uses only the positions in each list; weighted fusion mixes the scores with a weight that says how much to trust each search."
+    },
+    {
+      "term": "Reranker (cross-encoder)",
+      "plain": "A second model that reads the question and one passage together and scores how well the passage answers it. It is more careful than the first search and much slower, so it only reorders a short list."
+    },
+    {
+      "term": "Citation (source attribution)",
+      "plain": "A number in the answer, like [1], that points to the passage the sentence came from. The reader can check the answer against the original text in one click."
+    },
+    {
+      "term": "Grounding",
+      "plain": "An answer is grounded when everything it says can be found in the passages the model was given. The citation and figure checks here are a cheap test of grounding."
+    },
+    {
+      "term": "Relevance gate (refusal)",
+      "plain": "A check before the model is called: if even the best passage is a poor match for the question, the assistant says it does not know. It costs nothing and does not depend on the model behaving."
+    },
+    {
+      "term": "Hit@1 and Hit@4",
+      "plain": "The share of questions where the right passage is the first result, or among the first four. Four matters because the model receives four passages."
+    },
+    {
+      "term": "MRR (mean reciprocal rank)",
+      "plain": "A score that rewards putting the right passage near the top: 1 for first place, one half for second, one third for third, averaged over all questions."
+    },
+    {
+      "term": "nDCG@10",
+      "plain": "The standard ranking score in search research, between 0 and 1. It looks at the top ten results and gives more credit the higher the relevant ones appear."
+    },
+    {
+      "term": "Recall@10",
+      "plain": "The share of the relevant passages that appear somewhere in the top ten results."
+    },
+    {
+      "term": "BEIR and SciFact",
+      "plain": "BEIR is a public collection of search benchmarks used to compare retrieval systems. SciFact is one of them: 5,183 scientific abstracts and 300 test claims, each labelled by people with the abstracts that support or refute it."
+    },
+    {
+      "term": "Train and test split",
+      "plain": "Settings are tuned on one set of questions (train) and the result is reported on a different set (test). Tuning and reporting on the same questions would make the numbers look better than they are."
+    },
+    {
+      "term": "ONNX Runtime",
+      "plain": "A fast engine for running trained models on ordinary CPUs. It lets this project run its embedding and reranking models without installing PyTorch."
+    },
+    {
+      "term": "Token",
+      "plain": "The unit language models read and bill by, roughly three quarters of a word. The trace shows how many tokens each answer used and what they cost."
+    },
+    {
+      "term": "Prompt injection",
+      "plain": "Text inside a document or question that tries to give the model new instructions. The prompt here tells the model that sources are reference text, which lowers the risk and does not remove it."
+    },
+    {
+      "term": "Mock provider (offline mode)",
+      "plain": "A stand-in for the language model that needs no key and always behaves the same. Here it quotes the best-matching sentences of the top passage, which is enough to test everything around the model."
+    }
+  ],
+  "limits": [
+    "The check on the OpenAI API has not been run, because no key was in the .env file during the build. Real-model results come from a local 3B llama3.2 model on a sample of 57 questions, not the full 100.",
+    "The small local model is over-cautious: it refused 9 of 43 answerable questions although the right passage was in front of it. A stronger model should do better, and that has not been measured here.",
+    "The offline mode is not a model. It quotes sentences from the top passage, so its answer score measures the pipeline and says nothing about answer quality.",
+    "The demo corpus is small and synthetic: 20 hand-written documents, 85 passages. The handbook questions were written by the same author as the handbook. The SciFact benchmark numbers are the independent ones.",
+    "The refusal threshold (0.60) was read from the same 100 questions it is reported on, and it only fits the bge-small embedding model.",
+    "The relevance gate stops only clearly off-topic questions (4 of 14). Refusing on-topic questions that the documents do not cover depends on the language model following its instructions.",
+    "The citation check proves the cited passage exists and contains the answer's figures. It does not prove the passage supports every word.",
+    "On the handbook questions, meaning search alone scores higher than the default hybrid setting (0.957 against 0.929 nDCG@10). The default was chosen on public training data instead.",
+    "The larger reranker (bge-reranker-base) was measured on the handbook only. On this CPU a run on the public benchmark would take over an hour.",
+    "English only with the default models. Markdown only: PDF, Word and HTML need a conversion step that is not built.",
+    "No user accounts, no per-document permissions, no rate limiting.",
+    "No conversation memory: each question is answered on its own.",
+    "The embedded Qdrant index serves one process. The Qdrant server mode (QDRANT_URL) is implemented but was not run in this build.",
+    "Latency figures come from a 2014 4-core CPU that was also running a desktop session, so they are indicative."
+  ],
+  "run": [
+    "cd /var/www/AB/github-projects/projects/02-rag-knowledge-assistant",
+    ".venv/bin/python -m rag.cli serve                       # then open http://127.0.0.1:8021",
+    ".venv/bin/python -m rag.cli ask \"How long do I have to report a damaged parcel?\"",
+    ".venv/bin/python -m rag.cli search \"late parcel refund\" --mode hybrid",
+    ".venv/bin/pytest -q                                     # the tests",
+    ".venv/bin/python -m evals.retrieval --dataset handbook  # retrieval numbers on the handbook",
+    ".venv/bin/python -m evals.answers                       # answer numbers, offline",
+    ".venv/bin/python -m scripts.download_scifact && .venv/bin/python -m evals.retrieval --dataset scifact   # the public benchmark",
+    "LLM_PROVIDER=openai OPENAI_BASE_URL=http://localhost:11434/v1 OPENAI_MODEL=llama3.2-cpu .venv/bin/python -m rag.cli serve   # with the local model"
+  ],
+  "files": [
+    {
+      "path": "rag/retrieve.py",
+      "what": "The retrieval pipeline: keyword search, meaning search, fusion and reranking. The most important file to understand."
+    },
+    {
+      "path": "rag/answer.py",
+      "what": "The assistant: relevance gate, call to the model, citation and figure checks, and the wiring of all parts."
+    },
+    {
+      "path": "rag/llm.py",
+      "what": "The answer prompt, the OpenAI-compatible provider with cost tracking, and the offline answer writer."
+    },
+    {
+      "path": "rag/index.py",
+      "what": "Builds, saves and reloads the index: embeddings in Qdrant plus the keyword index."
+    },
+    {
+      "path": "rag/bm25.py",
+      "what": "Keyword search (BM25) in about 60 lines."
+    },
+    {
+      "path": "rag/chunking.py",
+      "what": "Splits Markdown documents into passages at their headings."
+    },
+    {
+      "path": "rag/embed.py",
+      "what": "The embedding model (fastembed, CPU) and the tiny offline embedder used by the tests."
+    },
+    {
+      "path": "rag/rerank.py",
+      "what": "The cross-encoder reranker and its offline stand-in."
+    },
+    {
+      "path": "rag/api.py",
+      "what": "The FastAPI service: ask, search, documents, health."
+    },
+    {
+      "path": "rag/static/index.html",
+      "what": "The demo page: answer with clickable citations, source passages and a trace."
+    },
+    {
+      "path": "rag/cli.py",
+      "what": "Command line: index, ask, search, serve."
+    },
+    {
+      "path": "rag/config.py",
+      "what": "Every setting, read from the environment or a .env file."
+    },
+    {
+      "path": "data/handbook/",
+      "what": "The 20 Markdown documents of the fictional carrier's operations handbook."
+    },
+    {
+      "path": "evals/questions.jsonl",
+      "what": "100 handbook questions: 86 with the passage that answers them, 14 that the handbook does not cover."
+    },
+    {
+      "path": "evals/retrieval.py",
+      "what": "Measures every retrieval stage on the handbook or on SciFact."
+    },
+    {
+      "path": "evals/tune_fusion.py",
+      "what": "Chooses the fusion setting on training queries and reports it on the test sets."
+    },
+    {
+      "path": "evals/answers.py",
+      "what": "Measures the answers: right passage cited, fact present, refusals; also the threshold sweep."
+    },
+    {
+      "path": "evals/report-*.json",
+      "what": "The saved output of each evaluation run quoted in the README."
+    },
+    {
+      "path": "scripts/download_scifact.py",
+      "what": "Downloads the public SciFact benchmark (not stored in the repository)."
+    },
+    {
+      "path": "tests/",
+      "what": "The offline test suite."
+    },
+    {
+      "path": "Dockerfile",
+      "what": "Container image for the API."
+    },
+    {
+      "path": ".github/workflows/tests.yml",
+      "what": "Runs the tests on every push."
+    }
+  ],
   "verification": {
-    "tests": "",
+    "tests": "67 passed (pytest, offline, no key)",
     "live_llm": "pending",
     "cost_usd": 0,
-    "notes": ""
+    "notes": "The OpenAI live check is pending: OPENAI_API_KEY in /var/www/AB/github-projects/.env was empty during the build, so nothing was spent. The real-model path was checked at no cost on local llama3.2 (3B) through Ollama's OpenAI-compatible API: on a sample of 43 answerable and 14 out-of-scope questions, 33 of 43 answerable were correct and 14 of 14 out-of-scope were refused. The server was started and /health, /ask and the page were called; the Docker image was built and a container answered a question (with the offline components). The Qdrant server mode was not run. Embedding the SciFact corpus took 19 minutes on this CPU."
   }
 }

@@ -64,7 +64,7 @@ def gate_sweep(assistant: Assistant, queries: list[Query]) -> None:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("--limit", type=int, default=0, help="only the first N answerable and N unanswerable questions")
+    parser.add_argument("--limit", type=int, default=0, help="a sample: N evenly spaced answerable questions and up to N unanswerable ones")
     parser.add_argument("--gate-sweep", action="store_true")
     args = parser.parse_args()
 
@@ -75,7 +75,11 @@ def main() -> None:
         gate_sweep(assistant, queries)
         return
     if args.limit:
-        queries = [q for q in queries if q.gold][: args.limit] + [q for q in queries if not q.gold][: args.limit]
+        # Evenly spaced, not the first N: the file is ordered by document, and a sample
+        # should cover the whole handbook.
+        good = [q for q in queries if q.gold]
+        step = max(1, len(good) // args.limit)
+        queries = good[::step][: args.limit] + [q for q in queries if not q.gold][: args.limit]
 
     rows, tokens_in, tokens_out, cost, latencies = [], 0, 0, 0.0, []
     for n, query in enumerate(queries, start=1):

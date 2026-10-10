@@ -7,9 +7,9 @@
     "min_relevance": 0.6,
     "answerable": 86,
     "answerable_correct": 65,
-    "answerable_cited_right_passage": 68,
+    "answerable_cited_right_passage": 69,
     "answerable_fact_present": 66,
-    "answerable_wrongly_refused": 8,
+    "answerable_wrongly_refused": 6,
     "unanswerable": 14,
     "unanswerable_refused": 4,
     "unanswerable_refused_by_gate": 4,
@@ -17,7 +17,7 @@
     "prompt_tokens": 0,
     "completion_tokens": 0,
     "cost_usd": 0.0,
-    "latency_ms_median": 9.1
+    "latency_ms_median": 19.5
   },
   "rows": [
     {
@@ -184,7 +184,7 @@
       "id": "q11",
       "type": "paraphrase",
       "question": "What is the largest battery capacity allowed inside a laptop I ship?",
-      "answer": "Lithium batteries are accepted only when they are installed in the device they power, and only up to 100 Wh per battery. [1] They may travel on Standard and Economy with the battery label applied. [1]",
+      "answer": "Lithium batteries are accepted only when they are installed in the device they power, and only up to 100 Wh per battery. [1] Loose batteries and power banks are not accepted on Express, because Express parcels may travel by air. [1]",
       "refused": false,
       "refusal_reason": null,
       "cited": [
@@ -566,10 +566,12 @@
       "id": "q35",
       "type": "paraphrase",
       "question": "What do you charge when a customer sends an item back?",
-      "answer": "I could not find this in the documents.",
-      "refused": true,
-      "refusal_reason": "model",
-      "cited": [],
+      "answer": "When a parcel is found to contain undeclared restricted goods, it is returned to the sender and a return fee of 15 EUR is charged. [1]",
+      "refused": false,
+      "refusal_reason": null,
+      "cited": [
+        "restricted-items#undeclared-restricted-goods"
+      ],
       "warnings": [],
       "top_similarity": 0.722,
       "cited_gold": false,
@@ -788,7 +790,7 @@
       "id": "q49",
       "type": "direct",
       "question": "How long do I have to dispute an invoice?",
-      "answer": "A billing dispute must be opened within 30 days of the invoice date, from the invoice page in the portal or by writing to billing@kestrel-parcel.example. [1]",
+      "answer": "A billing dispute must be opened within 30 days of the invoice date, from the invoice page in the portal or by writing to billing@kestrel-parcel.example. [1] Lines that are not disputed remain due on the normal date. [1]",
       "refused": false,
       "refusal_reason": null,
       "cited": [
@@ -992,7 +994,7 @@
       "id": "q62",
       "type": "direct",
       "question": "How many times can a label be reprinted for free?",
-      "answer": "A label can be reprinted from the portal up to 5 times at no cost. [1]",
+      "answer": "A label can be reprinted from the portal up to 5 times at no cost. [1] Reprints keep the same tracking number. [1]",
       "refused": false,
       "refusal_reason": null,
       "cited": [
@@ -1290,13 +1292,15 @@
       "id": "q81",
       "type": "paraphrase",
       "question": "Someone wants their personal information erased. What is the deadline to respond?",
-      "answer": "I could not find this in the documents.",
-      "refused": true,
-      "refusal_reason": "model",
-      "cited": [],
+      "answer": "A person can ask for a copy of their data or for its deletion. [1]",
+      "refused": false,
+      "refusal_reason": null,
+      "cited": [
+        "data-privacy-retention#data-requests"
+      ],
       "warnings": [],
       "top_similarity": 0.771,
-      "cited_gold": false,
+      "cited_gold": true,
       "facts_ok": false,
       "correct": false
     },
@@ -1544,7 +1548,7 @@
       "id": "u13",
       "type": "unanswerable",
       "question": "Which vehicle models are in the delivery fleet?",
-      "answer": "Delivery takes 2 to 4 business days after the first depot scan. [1] There is no delivery-time guarantee on Standard. [1]",
+      "answer": "Delivery takes 2 to 4 business days after the first depot scan. [1] Standard parcels are delivered Monday to Friday between 08:00 and 18:00. [1]",
       "refused": false,
       "refusal_reason": null,
       "cited": [

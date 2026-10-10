@@ -5,6 +5,7 @@
   "embedding_model": "BAAI/bge-small-en-v1.5",
   "candidates_per_search": 20,
   "rerank_top_n": 20,
+  "dense_weight": 0.7,
   "stages": {
     "Keyword (BM25)": {
       "hit@1": 0.55,
@@ -23,31 +24,31 @@
       "recall@10": 0.8452,
       "mrr@10": 0.6847,
       "ndcg@10": 0.7203,
-      "latency_ms_median": 51.7,
+      "latency_ms_median": 54.3,
       "hit@1_by_type": {
         "claim": 0.6033
       }
     },
-    "Hybrid (fusion)": {
-      "hit@1": 0.5933,
+    "Hybrid (weighted fusion)": {
+      "hit@1": 0.63,
       "hit@4": 0.77,
-      "recall@10": 0.8722,
-      "mrr@10": 0.6828,
-      "ndcg@10": 0.7237,
-      "latency_ms_median": 46.2,
+      "recall@10": 0.8652,
+      "mrr@10": 0.7078,
+      "ndcg@10": 0.7416,
+      "latency_ms_median": 62.3,
       "hit@1_by_type": {
-        "claim": 0.5933
+        "claim": 0.63
       }
     },
     "Hybrid + rerank (Xenova/ms-marco-MiniLM-L-6-v2)": {
-      "hit@1": 0.5833,
-      "hit@4": 0.7633,
-      "recall@10": 0.8484,
-      "mrr@10": 0.6692,
-      "ndcg@10": 0.7056,
-      "latency_ms_median": 1707.7,
+      "hit@1": 0.58,
+      "hit@4": 0.76,
+      "recall@10": 0.8412,
+      "mrr@10": 0.6657,
+      "ndcg@10": 0.7025,
+      "latency_ms_median": 1724.7,
       "hit@1_by_type": {
-        "claim": 0.5833
+        "claim": 0.58
       }
     }
   }

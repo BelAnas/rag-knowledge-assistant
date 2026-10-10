@@ -85,11 +85,16 @@ class MockLLM:
     def answer(self, question: str, sources: list[str]) -> LLMReply:
         if not sources:
             return LLMReply(REFUSAL)
-        terms = set(tokenize(question))
+        # Words are compared on their first five letters, a crude way to let "report" match
+        # "reported" without a real stemmer.
+        def stems(text: str) -> set[str]:
+            return {token[:5] for token in tokenize(text)}
+
+        terms = stems(question)
         # The first line of a source is its "Title: Section" header, not a sentence to quote.
         body = sources[0].split("\n", 1)[-1]
         sentences = split_sentences(body)
-        scored = [(len(terms & set(tokenize(s))), i) for i, s in enumerate(sentences)]
+        scored = [(len(terms & stems(s)), i) for i, s in enumerate(sentences)]
         best = sorted((item for item in scored if item[0] > 0), key=lambda item: (-item[0], item[1]))[:2]
         if not best:
             return LLMReply(REFUSAL)
