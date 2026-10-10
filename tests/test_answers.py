@@ -23,7 +23,7 @@ class ScriptedLLM:
         return LLMReply(self.reply, prompt_tokens=100, completion_tokens=20)
 
 
-def _with(assistant: Assistant, llm, min_relevance: float = 0.5) -> Assistant:
+def _with(assistant: Assistant, llm, min_relevance: float = 0.3) -> Assistant:
     return Assistant(assistant.retriever, llm, final_k=4, min_relevance=min_relevance)
 
 

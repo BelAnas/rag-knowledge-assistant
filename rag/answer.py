@@ -95,8 +95,8 @@ class Assistant:
 
         # Relevance gate. Refusing here, before the model is called, costs nothing and does
         # not depend on the model obeying an instruction to say "I don't know".
-        top_score = hits[0].rerank_score if hits else None
-        trace["top_rerank_score"] = None if top_score is None else round(top_score, 3)
+        top_score = retrieval.top_similarity
+        trace["top_similarity"] = None if top_score is None else round(top_score, 3)
         trace["min_relevance"] = None if self.min_relevance == float("-inf") else self.min_relevance
         if not hits or (top_score is not None and top_score < self.min_relevance):
             return finish(Answer(question, REFUSAL, True, "gate", [], hits, [], trace))
@@ -124,7 +124,7 @@ def build_assistant(settings: Settings, in_memory: bool = False) -> Assistant:
     index_dir = None if in_memory else settings.index_dir / re.sub(r"[^a-zA-Z0-9]+", "-", embedder.name)
     index = KnowledgeIndex.open(chunks, embedder, index_dir, settings.qdrant_url)
     reranker = make_reranker(settings.reranker, settings.reranker_model)
-    retriever = Retriever(index, embedder, reranker, settings.candidates, settings.rerank_top_n)
+    retriever = Retriever(index, embedder, reranker, settings.candidates, settings.rerank_top_n, settings.dense_weight)
     llm = make_llm(settings.llm_provider, settings.openai_model, settings.openai_api_key,
                    settings.openai_base_url, settings.max_output_tokens)
     return Assistant(retriever, llm, settings.final_k, settings.min_relevance)

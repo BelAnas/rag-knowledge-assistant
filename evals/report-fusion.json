@@ -1,0 +1,59 @@
+{
+  "metric": "ndcg@10",
+  "chosen_on": "scifact_train",
+  "chosen": "Weighted, meaning 0.7",
+  "embedding_model": "BAAI/bge-small-en-v1.5",
+  "candidates_per_search": 20,
+  "results": {
+    "Keyword only": {
+      "scifact_train": 0.6854,
+      "scifact_test": 0.6735,
+      "handbook": 0.7503
+    },
+    "Meaning only": {
+      "scifact_train": 0.7524,
+      "scifact_test": 0.7203,
+      "handbook": 0.9566
+    },
+    "Rank fusion (RRF)": {
+      "scifact_train": 0.7517,
+      "scifact_test": 0.7237,
+      "handbook": 0.8754
+    },
+    "Weighted, meaning 0.3": {
+      "scifact_train": 0.7379,
+      "scifact_test": 0.723,
+      "handbook": 0.8469
+    },
+    "Weighted, meaning 0.4": {
+      "scifact_train": 0.7544,
+      "scifact_test": 0.7361,
+      "handbook": 0.8725
+    },
+    "Weighted, meaning 0.5": {
+      "scifact_train": 0.7668,
+      "scifact_test": 0.7412,
+      "handbook": 0.9016
+    },
+    "Weighted, meaning 0.6": {
+      "scifact_train": 0.77,
+      "scifact_test": 0.7443,
+      "handbook": 0.9229
+    },
+    "Weighted, meaning 0.7": {
+      "scifact_train": 0.7705,
+      "scifact_test": 0.7416,
+      "handbook": 0.9288
+    },
+    "Weighted, meaning 0.8": {
+      "scifact_train": 0.7638,
+      "scifact_test": 0.7351,
+      "handbook": 0.9375
+    },
+    "Weighted, meaning 0.9": {
+      "scifact_train": 0.7599,
+      "scifact_test": 0.7287,
+      "handbook": 0.9574
+    }
+  }
+}

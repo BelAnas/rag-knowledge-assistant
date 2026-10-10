@@ -9,7 +9,7 @@ from rag.config import Settings, get_settings
 
 @pytest.fixture(scope="session")
 def settings() -> Settings:
-    return get_settings(embedder="hash", reranker="lexical", llm_provider="mock", min_relevance=0.5, qdrant_url="")
+    return get_settings(embedder="hash", reranker="lexical", llm_provider="mock", min_relevance=0.3, qdrant_url="")
 
 
 @pytest.fixture(scope="session")

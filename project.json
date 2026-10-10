@@ -212,20 +212,20 @@
     {
       "name": "Interface",
       "goal": "An API and a page a client can try.",
-      "status": "todo",
-      "outcome": "",
+      "status": "done",
+      "outcome": "A FastAPI service with ask, search, documents and health endpoints, a web page that shows the answer with clickable citations, the passages and a timing and cost trace, and a command-line tool to index, ask, search and serve. The server was started and called for real, and the Docker image was built and answered a question.",
       "steps": [
         {
           "text": "Build the FastAPI service: ask, search, documents, health",
-          "done": false
+          "done": true
         },
         {
           "text": "Build the web page with clickable citations and the retrieval trace",
-          "done": false
+          "done": true
         },
         {
           "text": "Add a command-line tool to index, ask and serve",
-          "done": false
+          "done": true
         }
       ]
     },

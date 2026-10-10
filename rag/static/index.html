@@ -158,7 +158,7 @@ function render(data) {
   table.replaceChildren();
   row(table, "Model", t.model);
   for (const [stage, ms] of Object.entries(t.timings_ms)) row(table, "Time: " + stage.replace("_", " "), ms.toFixed(1) + " ms");
-  if (t.top_rerank_score != null) row(table, "Best relevance score (refuses under " + t.min_relevance + ")", t.top_rerank_score.toFixed(2));
+  if (t.top_similarity != null) row(table, "Best similarity to a passage" + (t.min_relevance != null ? " (refuses under " + t.min_relevance + ")" : ""), t.top_similarity.toFixed(2));
   row(table, "Tokens in + out", t.prompt_tokens + " + " + t.completion_tokens);
   row(table, "Cost", "$" + t.cost_usd.toFixed(6));
 }

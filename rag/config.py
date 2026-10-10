@@ -20,11 +20,11 @@ def _load_dotenv(path: Path) -> None:
         os.environ.setdefault(key.strip(), value.strip())
 
 
-# The relevance gate compares the best reranker score with a threshold. The two rerankers
-# score on different scales (model logits vs. a 0-1 word overlap), so each has its own
-# default. The cross-encoder value was chosen from the score distribution printed by
-# `python -m evals.answers --gate-sweep` on the handbook question set.
-DEFAULT_MIN_RELEVANCE = {"cross-encoder": 0.0, "lexical": 0.5, "none": float("-inf")}
+# The relevance gate compares the best cosine similarity between the question and any passage
+# with a threshold. Similarity scales differ between embedding models, so each embedder has
+# its own default. The bge-small value comes from `python -m evals.answers --gate-sweep`:
+# it is just under the lowest score of any answerable handbook question.
+DEFAULT_MIN_RELEVANCE = {"fastembed": 0.60, "hash": 0.30}
 
 
 @dataclass(frozen=True)
@@ -44,13 +44,13 @@ class Settings:
     candidates: int      # how many passages each search (keyword, meaning) contributes
     rerank_top_n: int    # how many fused candidates the reranker reads
     final_k: int         # how many passages the language model receives
-    min_relevance: float # relevance gate: below this, the assistant refuses
+    dense_weight: float  # fusion: share of the score that comes from meaning search (0-1)
+    min_relevance: float # relevance gate: below this similarity, the assistant refuses
 
 
 def get_settings(**overrides: object) -> Settings:
     _load_dotenv(ROOT / ".env")
     env = os.environ.get
-    reranker = env("RERANKER", "cross-encoder")
     values: dict[str, object] = dict(
         docs_dir=Path(env("DOCS_DIR", str(ROOT / "data" / "handbook"))),
         index_dir=Path(env("INDEX_DIR", str(ROOT / ".index"))),
@@ -61,15 +61,16 @@ def get_settings(**overrides: object) -> Settings:
         max_output_tokens=int(env("MAX_OUTPUT_TOKENS", "300")),
         embedder=env("EMBEDDER", "fastembed"),
         embedding_model=env("EMBEDDING_MODEL", "BAAI/bge-small-en-v1.5"),
-        reranker=reranker,
+        reranker=env("RERANKER", "none"),
         reranker_model=env("RERANKER_MODEL", "Xenova/ms-marco-MiniLM-L-6-v2"),
         qdrant_url=env("QDRANT_URL", ""),
         candidates=int(env("CANDIDATES", "20")),
         rerank_top_n=int(env("RERANK_TOP_N", "20")),
         final_k=int(env("FINAL_K", "4")),
+        dense_weight=float(env("DENSE_WEIGHT", "0.7")),
         min_relevance=float(env("MIN_RELEVANCE", "nan")),
     )
     values.update(overrides)
     if values["min_relevance"] != values["min_relevance"]:  # NaN means "not set"
-        values["min_relevance"] = DEFAULT_MIN_RELEVANCE.get(str(values["reranker"]), float("-inf"))
+        values["min_relevance"] = DEFAULT_MIN_RELEVANCE.get(str(values["embedder"]), float("-inf"))
     return Settings(**values)  # type: ignore[arg-type]

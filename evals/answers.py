@@ -32,7 +32,7 @@ def judge(query: Query, answer: Answer) -> dict[str, object]:
     row: dict[str, object] = {
         "id": query.id, "type": query.type, "question": query.text, "answer": answer.answer,
         "refused": answer.refused, "refusal_reason": answer.refusal_reason, "cited": cited_keys,
-        "warnings": answer.warnings, "top_rerank_score": answer.trace.get("top_rerank_score"),
+        "warnings": answer.warnings, "top_similarity": answer.trace.get("top_similarity"),
     }
     if query.gold:
         row["cited_gold"] = any(key in query.gold for key in cited_keys)
@@ -48,15 +48,15 @@ def gate_sweep(assistant: Assistant, queries: list[Query]) -> None:
     and how many out-of-scope questions it would stop. This is how MIN_RELEVANCE was chosen."""
     scores = []
     for query in queries:
-        hits = assistant.retriever.search(query.text, k=1).hits
-        scores.append((hits[0].rerank_score if hits and hits[0].rerank_score is not None else float("-inf"), bool(query.gold)))
+        top = assistant.retriever.search(query.text, k=1).top_similarity
+        scores.append((top if top is not None else float("-inf"), bool(query.gold)))
     answerable = [s for s, good in scores if good]
     unanswerable = [s for s, good in scores if not good]
-    print(f"top rerank score, answerable:   min {min(answerable):.2f}  median {statistics.median(answerable):.2f}")
-    print(f"top rerank score, unanswerable: max {max(unanswerable):.2f}  median {statistics.median(unanswerable):.2f}")
+    print(f"best similarity, answerable:   min {min(answerable):.3f}  median {statistics.median(answerable):.3f}")
+    print(f"best similarity, unanswerable: max {max(unanswerable):.3f}  median {statistics.median(unanswerable):.3f}")
     print("\n| Threshold | Answerable wrongly refused | Unanswerable stopped by the gate |")
     print("|---|---|---|")
-    for threshold in (-6, -4, -2, -1, 0, 1, 2, 3, 4):
+    for threshold in (0.50, 0.55, 0.60, 0.62, 0.65, 0.68, 0.70, 0.75):
         wrong = sum(s < threshold for s in answerable)
         stopped = sum(s < threshold for s in unanswerable)
         print(f"| {threshold} | {wrong} / {len(answerable)} | {stopped} / {len(unanswerable)} |")
@@ -92,6 +92,7 @@ def main() -> None:
     bad = [r for r in rows if r["type"] == "unanswerable"]
     summary = {
         "llm": assistant.llm.name, "reranker": settings.reranker_model if settings.reranker == "cross-encoder" else settings.reranker,
+        "dense_weight": settings.dense_weight,
         "embedder": assistant.retriever.embedder.name, "min_relevance": settings.min_relevance,
         "answerable": len(good),
         "answerable_correct": sum(bool(r["correct"]) for r in good),

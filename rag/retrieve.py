@@ -1,4 +1,4 @@
-"""Retrieval pipeline: keyword search + meaning search -> fusion -> rerank."""
+"""Retrieval pipeline: keyword search + meaning search -> fusion -> optional rerank."""
 from __future__ import annotations
 
 import time
@@ -36,6 +36,7 @@ class Hit:
 class Retrieval:
     hits: list[Hit]
     timings_ms: dict[str, float] = field(default_factory=dict)
+    top_similarity: float | None = None  # best cosine similarity of any passage to the query
 
 
 def reciprocal_rank_fusion(rankings: list[list[int]], k: int = RRF_K) -> dict[int, float]:
@@ -83,7 +84,7 @@ class Retriever:
         reranker: Reranker | None,
         candidates: int = 20,
         rerank_top_n: int = 20,
-        dense_weight: float | None = None,
+        dense_weight: float | None = 0.7,
     ) -> None:
         self.index = index
         self.embedder = embedder
@@ -140,4 +141,5 @@ class Retriever:
             ordered = sorted(shortlist, key=lambda h: (-(h.rerank_score or 0.0), h.index))
             timings["rerank"] = (time.perf_counter() - start) * 1000
 
-        return Retrieval(ordered[:k], {name: round(ms, 2) for name, ms in timings.items()})
+        return Retrieval(ordered[:k], {name: round(ms, 2) for name, ms in timings.items()},
+                         dense[0][1] if dense else None)

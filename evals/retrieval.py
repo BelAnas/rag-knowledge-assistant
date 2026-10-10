@@ -86,21 +86,18 @@ def main() -> None:
     report: dict[str, object] = {
         "dataset": args.dataset, "passages": len(chunks), "queries": len(queries),
         "embedding_model": embedder.name, "candidates_per_search": settings.candidates,
-        "rerank_top_n": settings.rerank_top_n, "stages": {},
+        "rerank_top_n": settings.rerank_top_n, "dense_weight": settings.dense_weight, "stages": {},
     }
     stages: dict[str, dict[str, object]] = report["stages"]  # type: ignore[assignment]
-    base = Retriever(index, embedder, None, settings.candidates, settings.rerank_top_n)
-    for mode, label in (("bm25", "Keyword (BM25)"), ("dense", "Meaning (embeddings)"), ("hybrid", "Hybrid (fusion)")):
+    base = Retriever(index, embedder, None, settings.candidates, settings.rerank_top_n, settings.dense_weight)
+    for mode, label in (("bm25", "Keyword (BM25)"), ("dense", "Meaning (embeddings)"), ("hybrid", "Hybrid (weighted fusion)")):
         stages[label] = evaluate(base, queries, mode)
 
-    if settings.reranker == "cross-encoder":
-        models = [m for m in args.rerankers.split(",") if m] or [settings.reranker_model]
-    else:
-        models = [settings.reranker] if settings.reranker != "none" else []
-    for model in models:
-        reranker = make_reranker(settings.reranker, model)
+    # Rerankers are measured only on request: on this CPU one adds seconds per query.
+    for model in [m for m in args.rerankers.split(",") if m]:
+        reranker = make_reranker("cross-encoder", model)
         assert reranker is not None
-        retriever = Retriever(index, embedder, reranker, settings.candidates, settings.rerank_top_n)
+        retriever = Retriever(index, embedder, reranker, settings.candidates, settings.rerank_top_n, settings.dense_weight)
         stages[f"Hybrid + rerank ({reranker.name})"] = evaluate(retriever, queries, "hybrid_rerank")
     index.close()
 

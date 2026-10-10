@@ -66,7 +66,7 @@ def test_model_outage_becomes_a_502_without_internal_details(assistant):
         def answer(self, question, sources):
             raise RuntimeError("secret-internal-detail")
 
-    with TestClient(create_app(Assistant(assistant.retriever, Broken(), 4, 0.5))) as broken_client:
+    with TestClient(create_app(Assistant(assistant.retriever, Broken(), 4, 0.3))) as broken_client:
         response = broken_client.post("/ask", json={"question": "What does PU-204 mean?"})
     assert response.status_code == 502 and "secret-internal-detail" not in response.text
 
