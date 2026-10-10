@@ -1,0 +1,100 @@
+{"id": "q01", "type": "direct", "question": "How long does Kestrel Standard delivery take?", "gold": ["service-levels#standard-service"], "facts": ["2 to 4"]}
+{"id": "q02", "type": "direct", "question": "What is the latest time I can hand over an Express parcel for next-day delivery?", "gold": ["service-levels#express-service"], "facts": ["16:00"]}
+{"id": "q03", "type": "paraphrase", "question": "Which is the cheapest shipping option and how slow is it?", "gold": ["service-levels#economy-service"], "facts": ["5 to 8"]}
+{"id": "q04", "type": "direct", "question": "How much is the Saturday delivery surcharge?", "gold": ["service-levels#saturday-delivery"], "facts": ["4.50"]}
+{"id": "q05", "type": "paraphrase", "question": "My overnight parcel showed up two days late. Do I get my money back?", "gold": ["service-levels#express-guarantee"], "facts": ["shipping fee"]}
+{"id": "q06", "type": "direct", "question": "What is the maximum weight of a single parcel?", "gold": ["parcel-limits-packaging#size-and-weight-limits"], "facts": ["31.5"]}
+{"id": "q07", "type": "paraphrase", "question": "How do you bill a big box that weighs almost nothing?", "gold": ["parcel-limits-packaging#volumetric-weight"], "facts": ["5000"]}
+{"id": "q08", "type": "direct", "question": "What kind of box do I need for a parcel over 15 kg?", "gold": ["parcel-limits-packaging#packaging-requirements"], "facts": ["double-wall"]}
+{"id": "q09", "type": "paraphrase", "question": "I'm sending a poster tube that can't go on the conveyor. Is there an extra charge?", "gold": ["parcel-limits-packaging#oversize-handling"], "facts": ["12"]}
+{"id": "q10", "type": "direct", "question": "Can I ship a power bank with Express?", "gold": ["restricted-items#lithium-batteries"], "facts": ["not|no|cannot"]}
+{"id": "q11", "type": "paraphrase", "question": "What is the largest battery capacity allowed inside a laptop I ship?", "gold": ["restricted-items#lithium-batteries"], "facts": ["100 wh"]}
+{"id": "q12", "type": "direct", "question": "Does Kestrel carry live animals?", "gold": ["restricted-items#items-we-do-not-carry"], "facts": ["not|no"]}
+{"id": "q13", "type": "paraphrase", "question": "Can I mail a potted fern abroad?", "gold": ["restricted-items#plants"], "facts": ["domestic"]}
+{"id": "q14", "type": "direct", "question": "What is the fee when undeclared restricted goods are found?", "gold": ["restricted-items#undeclared-restricted-goods"], "facts": ["15"]}
+{"id": "q15", "type": "direct", "question": "Until what time can I book a pickup for the same day?", "gold": ["pickups#booking-a-pickup"], "facts": ["12:00"]}
+{"id": "q16", "type": "paraphrase", "question": "What are the time slots for a driver to come and collect?", "gold": ["pickups#pickup-windows"], "facts": ["09:00", "18:00"]}
+{"id": "q17", "type": "paraphrase", "question": "How many parcels a week do I need to send to get a fixed collection schedule?", "gold": ["pickups#recurring-pickups"], "facts": ["10"]}
+{"id": "q18", "type": "direct", "question": "How long does the driver wait at a pickup?", "gold": ["pickups#missed-pickups"], "facts": ["5 minutes"]}
+{"id": "q19", "type": "code", "question": "What does PU-204 mean?", "gold": ["tracking-status-codes#pickup-and-depot-codes", "pickups#missed-pickups"], "facts": ["closed"]}
+{"id": "q20", "type": "direct", "question": "How many delivery attempts does Kestrel make?", "gold": ["delivery-attempts#number-of-attempts"], "facts": ["3|three"]}
+{"id": "q21", "type": "paraphrase", "question": "Nobody was home three times. Where is my package now and for how long?", "gold": ["delivery-attempts#held-at-depot"], "facts": ["7"]}
+{"id": "q22", "type": "paraphrase", "question": "Can the courier just drop the box behind my garden gate?", "gold": ["delivery-attempts#safe-place-delivery"], "facts": ["consent"]}
+{"id": "q23", "type": "direct", "question": "When is a signature required?", "gold": ["delivery-attempts#signature"], "facts": ["500"]}
+{"id": "q24", "type": "code", "question": "What does NO-NBR on a label mean?", "gold": ["delivery-attempts#delivery-to-a-neighbour"], "facts": ["neighbour|neighbor"]}
+{"id": "q25", "type": "direct", "question": "How much does an address correction cost after dispatch?", "gold": ["address-correction#after-dispatch"], "facts": ["3.90"]}
+{"id": "q26", "type": "paraphrase", "question": "I typed the wrong street but the parcel hasn't been scanned yet. Will fixing it cost me?", "gold": ["address-correction#before-dispatch"], "facts": ["free"]}
+{"id": "q27", "type": "paraphrase", "question": "Can I send a parcel that's already travelling to a different country instead?", "gold": ["address-correction#what-cannot-be-changed"], "facts": ["not|no|cannot"]}
+{"id": "q28", "type": "code", "question": "A parcel shows AD-110. What happens to it?", "gold": ["address-correction#incomplete-addresses", "tracking-status-codes#delivery-codes"], "facts": ["address"]}
+{"id": "q29", "type": "direct", "question": "How many days do I have to report a damaged parcel?", "gold": ["damage-and-loss-claims#reporting-damage"], "facts": ["7"]}
+{"id": "q30", "type": "paraphrase", "question": "Which pictures do I need to send when a shipment arrives broken?", "gold": ["damage-and-loss-claims#reporting-damage"], "facts": ["label"]}
+{"id": "q31", "type": "paraphrase", "question": "After how long without tracking updates is a package declared missing?", "gold": ["damage-and-loss-claims#when-a-parcel-counts-as-lost"], "facts": ["10 business days"]}
+{"id": "q32", "type": "direct", "question": "What is the maximum compensation per parcel?", "gold": ["damage-and-loss-claims#compensation"], "facts": ["500"]}
+{"id": "q33", "type": "paraphrase", "question": "How quickly will I hear back about my claim?", "gold": ["damage-and-loss-claims#decision-time"], "facts": ["10 business days"]}
+{"id": "q34", "type": "direct", "question": "How long is a return label valid?", "gold": ["returns#return-labels"], "facts": ["30 days"]}
+{"id": "q35", "type": "paraphrase", "question": "What do you charge when a customer sends an item back?", "gold": ["returns#return-pricing"], "facts": ["10 percent|10%"]}
+{"id": "q36", "type": "paraphrase", "question": "On which weekday do consolidated returns arrive?", "gold": ["returns#return-hub-consolidation"], "facts": ["thursday"]}
+{"id": "q37", "type": "paraphrase", "question": "The recipient turned the parcel away at the door. What rate applies for sending it back?", "gold": ["returns#refused-parcels"], "facts": ["standard"]}
+{"id": "q38", "type": "direct", "question": "How many copies of the commercial invoice are needed?", "gold": ["customs-international#required-documents"], "facts": ["3|three"]}
+{"id": "q39", "type": "direct", "question": "When is an HS code required?", "gold": ["customs-international#hs-codes-and-eori"], "facts": ["150"]}
+{"id": "q40", "type": "paraphrase", "question": "What is the handling fee if we pay import taxes for the receiver?", "gold": ["customs-international#duties-and-taxes"], "facts": ["6"]}
+{"id": "q41", "type": "code", "question": "What should I do about status CU-301?", "gold": ["customs-international#customs-holds", "tracking-status-codes#exception-codes"], "facts": ["invoice|document"]}
+{"id": "q42", "type": "direct", "question": "What does a Kestrel tracking number look like?", "gold": ["tracking-status-codes#tracking-numbers"], "facts": ["ks"]}
+{"id": "q43", "type": "code", "question": "What is DP-235?", "gold": ["tracking-status-codes#pickup-and-depot-codes"], "facts": ["sorting delay"]}
+{"id": "q44", "type": "code", "question": "Meaning of EX-512?", "gold": ["tracking-status-codes#exception-codes"], "facts": ["label"]}
+{"id": "q45", "type": "code", "question": "What does DL-417 stand for?", "gold": ["tracking-status-codes#delivery-codes"], "facts": ["absent"]}
+{"id": "q46", "type": "direct", "question": "When are invoices issued?", "gold": ["billing-invoices#invoice-schedule"], "facts": ["first|1st"]}
+{"id": "q47", "type": "paraphrase", "question": "How many days do we have to pay a bill?", "gold": ["billing-invoices#invoice-schedule"], "facts": ["14"]}
+{"id": "q48", "type": "paraphrase", "question": "When is next month's fuel percentage announced?", "gold": ["billing-invoices#fuel-surcharge"], "facts": ["25th|25"]}
+{"id": "q49", "type": "direct", "question": "How long do I have to dispute an invoice?", "gold": ["billing-invoices#disputing-an-invoice"], "facts": ["30 days"]}
+{"id": "q50", "type": "paraphrase", "question": "Can I get my bill on paper and what does it cost?", "gold": ["billing-invoices#paper-copies"], "facts": ["2 eur"]}
+{"id": "q51", "type": "direct", "question": "What is the API rate limit?", "gold": ["api-integration#rate-limits"], "facts": ["120"]}
+{"id": "q52", "type": "code", "question": "Which header carries the API key?", "gold": ["api-integration#authentication"], "facts": ["x-kestrel-key"]}
+{"id": "q53", "type": "paraphrase", "question": "How do I avoid creating a duplicate shipment when my request is retried after a timeout?", "gold": ["api-integration#idempotency"], "facts": ["idempotency-key"]}
+{"id": "q54", "type": "paraphrase", "question": "Is there a test environment and when is its data cleared?", "gold": ["api-integration#sandbox"], "facts": ["sunday"]}
+{"id": "q55", "type": "direct", "question": "How many shipments can the batch endpoint take?", "gold": ["api-integration#rate-limits"], "facts": ["100"]}
+{"id": "q56", "type": "direct", "question": "How many times is a webhook retried?", "gold": ["webhooks#retries"], "facts": ["6|six"]}
+{"id": "q57", "type": "code", "question": "What is in the X-Kestrel-Signature header?", "gold": ["webhooks#verifying-the-signature"], "facts": ["hmac"]}
+{"id": "q58", "type": "paraphrase", "question": "Our server was down for a week and notifications stopped coming. Why?", "gold": ["webhooks#automatic-disabling"], "facts": ["disabled"]}
+{"id": "q59", "type": "paraphrase", "question": "Can we get past notifications sent again?", "gold": ["webhooks#replaying-events"], "facts": ["14 days"]}
+{"id": "q60", "type": "direct", "question": "What size is the shipping label?", "gold": ["label-printing#label-format"], "facts": ["100 x 150|100x150|100 × 150|4 x 6"]}
+{"id": "q61", "type": "paraphrase", "question": "How much empty space is needed around the barcode?", "gold": ["label-printing#barcode-quality"], "facts": ["6 mm"]}
+{"id": "q62", "type": "direct", "question": "How many times can a label be reprinted for free?", "gold": ["label-printing#reprints"], "facts": ["5|five"]}
+{"id": "q63", "type": "paraphrase", "question": "I printed a label three weeks ago. Can I still use it?", "gold": ["label-printing#label-validity"], "facts": ["14 days"]}
+{"id": "q64", "type": "direct", "question": "Who can change the bank details of the account?", "gold": ["account-and-users#roles"], "facts": ["owner"]}
+{"id": "q65", "type": "paraphrase", "question": "Can staff get login codes by text message?", "gold": ["account-and-users#two-factor-authentication"], "facts": ["not|no"]}
+{"id": "q66", "type": "paraphrase", "question": "A colleague hasn't logged in since spring and now can't get in. Why?", "gold": ["account-and-users#inactive-users"], "facts": ["90 days"]}
+{"id": "q67", "type": "direct", "question": "How many users does the Starter plan allow?", "gold": ["account-and-users#single-sign-on-and-user-limits"], "facts": ["50"]}
+{"id": "q68", "type": "direct", "question": "What are the support opening hours on Saturday?", "gold": ["support-hours-escalation#opening-hours"], "facts": ["09:00", "13:00"]}
+{"id": "q69", "type": "paraphrase", "question": "How fast should I expect a first answer to an email?", "gold": ["support-hours-escalation#response-targets"], "facts": ["4 business hours"]}
+{"id": "q70", "type": "paraphrase", "question": "We can't ship anything at all. How quickly will someone respond?", "gold": ["support-hours-escalation#priority-1-incidents"], "facts": ["30 minutes"]}
+{"id": "q71", "type": "direct", "question": "When does a ticket go to tier 2?", "gold": ["support-hours-escalation#escalation-path"], "facts": ["1 business day|one business day"]}
+{"id": "q72", "type": "paraphrase", "question": "Until what time can I bring parcels to the depot so they leave tonight?", "gold": ["depot-receiving#depot-opening-hours"], "facts": ["18:30"]}
+{"id": "q73", "type": "direct", "question": "When do I need a manifest for a drop-off?", "gold": ["depot-receiving#bulk-drop-offs"], "facts": ["50"]}
+{"id": "q74", "type": "direct", "question": "What is the maximum pallet height?", "gold": ["depot-receiving#pallets"], "facts": ["1.8"]}
+{"id": "q75", "type": "direct", "question": "What temperature does Kestrel Cool maintain?", "gold": ["temperature-controlled#temperature-range-and-coverage"], "facts": ["2", "8"]}
+{"id": "q76", "type": "paraphrase", "question": "Why can't I book a chilled shipment on a Friday?", "gold": ["temperature-controlled#dispatch-days"], "facts": ["weekend"]}
+{"id": "q77", "type": "paraphrase", "question": "How long should the ice packs be in the freezer beforehand?", "gold": ["temperature-controlled#packing"], "facts": ["24 hours"]}
+{"id": "q78", "type": "direct", "question": "How much is the Cool surcharge?", "gold": ["temperature-controlled#price"], "facts": ["9"]}
+{"id": "q79", "type": "direct", "question": "How long is recipient data kept?", "gold": ["data-privacy-retention#recipient-data"], "facts": ["24 months"]}
+{"id": "q80", "type": "paraphrase", "question": "For how long do you keep the signed proof that a parcel arrived?", "gold": ["data-privacy-retention#proof-of-delivery"], "facts": ["36 months"]}
+{"id": "q81", "type": "paraphrase", "question": "Someone wants their personal information erased. What is the deadline to respond?", "gold": ["data-privacy-retention#data-requests"], "facts": ["30 days"]}
+{"id": "q82", "type": "direct", "question": "Where is customer data stored?", "gold": ["data-privacy-retention#where-data-is-stored"], "facts": ["frankfurt"]}
+{"id": "q83", "type": "direct", "question": "When is the peak season?", "gold": ["peak-season#peak-period"], "facts": ["15 november|november 15", "5 january|january 5"]}
+{"id": "q84", "type": "paraphrase", "question": "Does the on-time promise for overnight parcels still hold in December?", "gold": ["peak-season#changes-to-services", "service-levels#express-guarantee"], "facts": ["suspended|not apply|does not|no"]}
+{"id": "q85", "type": "direct", "question": "How much is the peak surcharge?", "gold": ["peak-season#peak-surcharge"], "facts": ["0.60"]}
+{"id": "q86", "type": "paraphrase", "question": "By when must large shippers send their holiday volume estimates?", "gold": ["peak-season#volume-forecasts"], "facts": ["1 october|october 1"]}
+{"id": "u01", "type": "unanswerable", "question": "What is the price of a Standard parcel up to 5 kg?", "gold": [], "facts": []}
+{"id": "u02", "type": "unanswerable", "question": "Does Kestrel deliver to Canada?", "gold": [], "facts": []}
+{"id": "u03", "type": "unanswerable", "question": "How do I apply for a job as a Kestrel driver?", "gold": [], "facts": []}
+{"id": "u04", "type": "unanswerable", "question": "What is the name of Kestrel's chief executive?", "gold": [], "facts": []}
+{"id": "u05", "type": "unanswerable", "question": "What is the phone number of customer support?", "gold": [], "facts": []}
+{"id": "u06", "type": "unanswerable", "question": "Which programming languages have an official SDK?", "gold": [], "facts": []}
+{"id": "u07", "type": "unanswerable", "question": "How much CO2 does one parcel emit?", "gold": [], "facts": []}
+{"id": "u08", "type": "unanswerable", "question": "What discount do I get for shipping more than 10,000 parcels a month?", "gold": [], "facts": []}
+{"id": "u09", "type": "unanswerable", "question": "Does the mobile app have a dark mode?", "gold": [], "facts": []}
+{"id": "u10", "type": "unanswerable", "question": "Who won the football world cup in 2018?", "gold": [], "facts": []}
+{"id": "u11", "type": "unanswerable", "question": "What is the capital of Australia?", "gold": [], "facts": []}
+{"id": "u12", "type": "unanswerable", "question": "How many depots does Kestrel operate?", "gold": [], "facts": []}
+{"id": "u13", "type": "unanswerable", "question": "Which vehicle models are in the delivery fleet?", "gold": [], "facts": []}
+{"id": "u14", "type": "unanswerable", "question": "What is the GraphQL endpoint of the API?", "gold": [], "facts": []}

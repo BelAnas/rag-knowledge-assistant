@@ -1,0 +1,88 @@
+{
+  "dataset": "handbook",
+  "passages": 85,
+  "queries": 86,
+  "embedding_model": "BAAI/bge-small-en-v1.5",
+  "candidates_per_search": 20,
+  "rerank_top_n": 20,
+  "stages": {
+    "Keyword (BM25)": {
+      "hit@1": 0.6628,
+      "hit@4": 0.8023,
+      "recall@10": 0.8314,
+      "mrr@10": 0.7266,
+      "ndcg@10": 0.7494,
+      "latency_ms_median": 0.1,
+      "hit@1_by_type": {
+        "code": 1.0,
+        "direct": 0.9474,
+        "paraphrase": 0.3077
+      }
+    },
+    "Meaning (embeddings)": {
+      "hit@1": 0.9186,
+      "hit@4": 0.9884,
+      "recall@10": 1.0,
+      "mrr@10": 0.9469,
+      "ndcg@10": 0.9566,
+      "latency_ms_median": 9.8,
+      "hit@1_by_type": {
+        "code": 1.0,
+        "direct": 0.9474,
+        "paraphrase": 0.8718
+      }
+    },
+    "Hybrid (fusion)": {
+      "hit@1": 0.7907,
+      "hit@4": 0.8953,
+      "recall@10": 0.9709,
+      "mrr@10": 0.8493,
+      "ndcg@10": 0.8754,
+      "latency_ms_median": 9.2,
+      "hit@1_by_type": {
+        "code": 1.0,
+        "direct": 0.9474,
+        "paraphrase": 0.5897
+      }
+    },
+    "Hybrid + rerank (Xenova/ms-marco-MiniLM-L-6-v2)": {
+      "hit@1": 0.8721,
+      "hit@4": 0.9651,
+      "recall@10": 0.9709,
+      "mrr@10": 0.9103,
+      "ndcg@10": 0.9223,
+      "latency_ms_median": 260.1,
+      "hit@1_by_type": {
+        "code": 1.0,
+        "direct": 1.0,
+        "paraphrase": 0.7179
+      }
+    },
+    "Hybrid + rerank (Xenova/ms-marco-MiniLM-L-12-v2)": {
+      "hit@1": 0.8721,
+      "hit@4": 0.9419,
+      "recall@10": 0.9884,
+      "mrr@10": 0.9109,
+      "ndcg@10": 0.9271,
+      "latency_ms_median": 440.6,
+      "hit@1_by_type": {
+        "code": 1.0,
+        "direct": 1.0,
+        "paraphrase": 0.7179
+      }
+    },
+    "Hybrid + rerank (jinaai/jina-reranker-v1-turbo-en)": {
+      "hit@1": 0.7791,
+      "hit@4": 0.9186,
+      "recall@10": 0.9884,
+      "mrr@10": 0.8455,
+      "ndcg@10": 0.8778,
+      "latency_ms_median": 288.2,
+      "hit@1_by_type": {
+        "code": 1.0,
+        "direct": 1.0,
+        "paraphrase": 0.5128
+      }
+    }
+  }
+}

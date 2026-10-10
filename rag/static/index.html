@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Knowledge assistant</title>
+<style>
+  :root { --bg:#f6f7f9; --card:#fff; --ink:#1c2430; --muted:#667085; --line:#e3e6eb; --accent:#0b6bcb; --accent-bg:#e8f1fb; --warn:#9a5b00; --warn-bg:#fff4dc; }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg:#12161c; --card:#1a2028; --ink:#e7ebf0; --muted:#98a2b3; --line:#2a323d; --accent:#6db3ff; --accent-bg:#16304d; --warn:#ffcf70; --warn-bg:#3a2c0d; }
+  }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.55 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  main { max-width: 860px; margin: 0 auto; padding: 32px 16px 64px; }
+  h1 { font-size: 1.5rem; margin: 0 0 4px; }
+  p.sub { color: var(--muted); margin: 0 0 20px; }
+  form { display:flex; gap:8px; }
+  input[type=text] { flex:1; padding:12px 14px; border:1px solid var(--line); border-radius:10px; background:var(--card); color:var(--ink); font:inherit; }
+  button { padding:12px 18px; border:0; border-radius:10px; background:var(--accent); color:#fff; font:inherit; font-weight:600; cursor:pointer; }
+  @media (prefers-color-scheme: dark) { button { color:#0c1520; } }
+  button:disabled { opacity:.6; cursor:wait; }
+  .chips { display:flex; flex-wrap:wrap; gap:8px; margin:12px 0 24px; }
+  .chip { padding:6px 12px; border:1px solid var(--line); border-radius:999px; background:var(--card); color:var(--ink); font-size:.875rem; font-weight:400; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:18px 20px; margin-bottom:16px; }
+  .answer { font-size:1.08rem; white-space:pre-wrap; }
+  .cite { display:inline-block; min-width:1.5em; padding:0 6px; margin:0 2px; border-radius:6px; background:var(--accent-bg); color:var(--accent); font-size:.8rem; font-weight:700; text-align:center; cursor:pointer; border:0; }
+  .refused { color:var(--muted); font-style:italic; }
+  .warn { background:var(--warn-bg); color:var(--warn); border-radius:8px; padding:8px 12px; margin-top:12px; font-size:.9rem; }
+  h2 { font-size:.8rem; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); margin:24px 0 8px; }
+  .source { transition: border-color .2s, box-shadow .2s; }
+  .source.hl { border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-bg); }
+  .source.unused { opacity:.62; }
+  .source header { display:flex; gap:10px; align-items:baseline; flex-wrap:wrap; margin-bottom:6px; }
+  .source .where { font-weight:600; }
+  .badges { margin-left:auto; display:flex; gap:6px; flex-wrap:wrap; }
+  .badge { font-size:.75rem; color:var(--muted); border:1px solid var(--line); border-radius:6px; padding:1px 7px; font-variant-numeric: tabular-nums; }
+  .source p { margin:0; font-size:.95rem; }
+  table { border-collapse:collapse; font-size:.9rem; width:100%; }
+  td { padding:4px 0; border-bottom:1px solid var(--line); }
+  td:last-child { text-align:right; font-variant-numeric: tabular-nums; }
+  tr:last-child td { border-bottom:0; }
+  #out[hidden] { display:none; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Knowledge assistant</h1>
+  <p class="sub">Ask about the Kestrel Parcel operations handbook. Every answer cites the passage it came from, and the assistant says so when the handbook has no answer.</p>
+  <form id="form">
+    <input id="q" type="text" maxlength="500" placeholder="For example: how long do I have to report a damaged parcel?" autocomplete="off" required>
+    <button id="go" type="submit">Ask</button>
+  </form>
+  <div class="chips" id="chips"></div>
+
+  <div id="out" hidden>
+    <div class="card">
+      <div class="answer" id="answer"></div>
+      <div id="warnings"></div>
+    </div>
+    <h2>Passages given to the model</h2>
+    <div id="sources"></div>
+    <h2>Trace</h2>
+    <div class="card"><table id="trace"></table></div>
+  </div>
+</main>
+<script>
+const EXAMPLES = [
+  "What does status code PU-204 mean?",
+  "My overnight parcel showed up two days late. Do I get my money back?",
+  "How do I avoid duplicate shipments when an API request is retried?",
+  "Which pictures do I need to send when a shipment arrives broken?",
+  "Does Kestrel deliver to Canada?"
+];
+const $ = id => document.getElementById(id);
+const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
+
+for (const text of EXAMPLES) {
+  const chip = el("button", "chip", text);
+  chip.type = "button";
+  chip.onclick = () => { $("q").value = text; ask(text); };
+  $("chips").append(chip);
+}
+$("form").onsubmit = e => { e.preventDefault(); ask($("q").value); };
+
+function highlight(n) {
+  const card = document.querySelector(`.source[data-n="${n}"]`);
+  if (!card) return;
+  document.querySelectorAll(".source.hl").forEach(c => c.classList.remove("hl"));
+  card.classList.add("hl");
+  card.scrollIntoView({ behavior: "smooth", block: "center" });
+}
+
+// The answer is built with text nodes only: nothing the model writes is ever parsed as HTML.
+function renderAnswer(target, text, valid) {
+  target.replaceChildren();
+  for (const part of text.split(/(\[\d+\])/)) {
+    const m = part.match(/^\[(\d+)\]$/);
+    if (m && valid.includes(+m[1])) {
+      const b = el("button", "cite", m[1]);
+      b.title = "Show source " + m[1];
+      b.onclick = () => highlight(m[1]);
+      target.append(b);
+    } else if (part) target.append(document.createTextNode(part));
+  }
+}
+
+function row(table, label, value) {
+  const tr = el("tr"); tr.append(el("td", null, label), el("td", null, value)); table.append(tr);
+}
+
+async function ask(question) {
+  question = question.trim();
+  if (question.length < 3) return;
+  $("go").disabled = true; $("go").textContent = "Searching…";
+  try {
+    const response = await fetch("/ask", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ question }) });
+    const data = await response.json();
+    if (!response.ok) throw new Error(typeof data.detail === "string" ? data.detail : "The request was rejected.");
+    render(data);
+  } catch (error) {
+    $("out").hidden = false;
+    $("answer").className = "answer refused";
+    $("answer").textContent = "Something went wrong: " + error.message;
+    $("warnings").replaceChildren(); $("sources").replaceChildren(); $("trace").replaceChildren();
+  } finally {
+    $("go").disabled = false; $("go").textContent = "Ask";
+  }
+}
+
+function render(data) {
+  $("out").hidden = false;
+  $("answer").className = "answer" + (data.refused ? " refused" : "");
+  renderAnswer($("answer"), data.answer, data.citations);
+
+  $("warnings").replaceChildren();
+  if (data.refused) {
+    $("warnings").append(el("div", "warn", data.refusal_reason === "gate"
+      ? "No passage was relevant enough, so the language model was not called."
+      : "The model read the passages below and found no answer in them."));
+  }
+  for (const w of data.warnings) $("warnings").append(el("div", "warn", w));
+
+  $("sources").replaceChildren();
+  for (const s of data.sources) {
+    const card = el("div", "card source" + (data.citations.includes(s.n) ? "" : " unused"));
+    card.dataset.n = s.n;
+    const head = el("header");
+    head.append(el("span", "cite", String(s.n)), el("span", "where", s.title + " › " + s.section));
+    const badges = el("span", "badges");
+    badges.append(el("span", "badge", "keyword #" + (s.keyword_rank ?? "–")), el("span", "badge", "meaning #" + (s.dense_rank ?? "–")));
+    if (s.rerank_score != null) badges.append(el("span", "badge", "rerank " + s.rerank_score.toFixed(2)));
+    head.append(badges);
+    card.append(head, el("p", null, s.text));
+    $("sources").append(card);
+  }
+
+  const t = data.trace, table = $("trace");
+  table.replaceChildren();
+  row(table, "Model", t.model);
+  for (const [stage, ms] of Object.entries(t.timings_ms)) row(table, "Time: " + stage.replace("_", " "), ms.toFixed(1) + " ms");
+  if (t.top_rerank_score != null) row(table, "Best relevance score (refuses under " + t.min_relevance + ")", t.top_rerank_score.toFixed(2));
+  row(table, "Tokens in + out", t.prompt_tokens + " + " + t.completion_tokens);
+  row(table, "Cost", "$" + t.cost_usd.toFixed(6));
+}
+</script>
+</body>
+</html>

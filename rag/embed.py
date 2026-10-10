@@ -28,7 +28,7 @@ class FastEmbedEmbedder:
         self.dim = int(self.embed_query("dimension probe").shape[0])
 
     def embed_passages(self, texts: list[str]) -> np.ndarray:
-        return np.asarray(list(self._model.passage_embed(texts, batch_size=32)), dtype=np.float32)
+        return np.asarray(list(self._model.passage_embed(texts, batch_size=8)), dtype=np.float32)
 
     def embed_query(self, text: str) -> np.ndarray:
         # Queries and passages go through different entry points because some models add a

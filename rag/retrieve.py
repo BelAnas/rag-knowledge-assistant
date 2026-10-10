@@ -51,6 +51,30 @@ def reciprocal_rank_fusion(rankings: list[list[int]], k: int = RRF_K) -> dict[in
     return fused
 
 
+def weighted_fusion(
+    keyword: list[tuple[int, float]], dense: list[tuple[int, float]], dense_weight: float
+) -> dict[int, float]:
+    """Merge by score: dense_weight x meaning score + (1 - dense_weight) x keyword score.
+
+    Each list is first rescaled to 0-1 (best = 1, last candidate = 0) so the two scales
+    become comparable. Unlike rank fusion this keeps the size of the gaps: a keyword match
+    that is far ahead of the rest counts for more than one that barely leads. The price is
+    one number to tune, which `python -m evals.tune_fusion` does on training queries.
+    """
+
+    def rescale(pairs: list[tuple[int, float]]) -> dict[int, float]:
+        if not pairs:
+            return {}
+        high, low = pairs[0][1], pairs[-1][1]
+        return {i: (score - low) / (high - low) if high > low else 1.0 for i, score in pairs}
+
+    fused: dict[int, float] = {}
+    for weight, scores in ((1 - dense_weight, rescale(keyword)), (dense_weight, rescale(dense))):
+        for i, score in scores.items():
+            fused[i] = fused.get(i, 0.0) + weight * score
+    return fused
+
+
 class Retriever:
     def __init__(
         self,
@@ -59,12 +83,15 @@ class Retriever:
         reranker: Reranker | None,
         candidates: int = 20,
         rerank_top_n: int = 20,
+        dense_weight: float | None = None,
     ) -> None:
         self.index = index
         self.embedder = embedder
         self.reranker = reranker
         self.candidates = candidates
         self.rerank_top_n = rerank_top_n
+        # None = reciprocal rank fusion; a number between 0 and 1 = weighted score fusion.
+        self.dense_weight = dense_weight
 
     def search(self, query: str, k: int = 4, mode: str = "hybrid_rerank") -> Retrieval:
         if mode not in MODES:
@@ -77,14 +104,14 @@ class Retriever:
                 hits[i] = Hit(self.index.chunks[i], i)
             return hits[i]
 
-        rankings: list[list[int]] = []
+        keyword: list[tuple[int, float]] = []
+        dense: list[tuple[int, float]] = []
         if mode != "dense":
             start = time.perf_counter()
             keyword = self.index.search_keyword(query, self.candidates)
             timings["keyword"] = (time.perf_counter() - start) * 1000
             for rank, (i, _) in enumerate(keyword, start=1):
                 hit(i).keyword_rank = rank
-            rankings.append([i for i, _ in keyword])
         if mode != "bm25":
             start = time.perf_counter()
             vector = self.embedder.embed_query(query).tolist()
@@ -94,9 +121,12 @@ class Retriever:
             timings["dense"] = (time.perf_counter() - start) * 1000
             for rank, (i, _) in enumerate(dense, start=1):
                 hit(i).dense_rank = rank
-            rankings.append([i for i, _ in dense])
 
-        for i, score in reciprocal_rank_fusion(rankings).items():
+        if self.dense_weight is None or mode in ("bm25", "dense"):
+            fused = reciprocal_rank_fusion([[i for i, _ in keyword], [i for i, _ in dense]])
+        else:
+            fused = weighted_fusion(keyword, dense, self.dense_weight)
+        for i, score in fused.items():
             hits[i].fused_score = score
         # Ties are broken by passage index so that two runs always return the same order.
         ordered = sorted(hits.values(), key=lambda h: (-h.fused_score, h.index))
