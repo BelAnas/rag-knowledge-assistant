@@ -128,35 +128,35 @@
     {
       "name": "Hybrid retrieval",
       "goal": "Search by meaning and by keyword, fused and reranked.",
-      "status": "todo",
-      "outcome": "",
+      "status": "done",
+      "outcome": "Passages are embedded on CPU with bge-small-en-v1.5 and stored in an embedded Qdrant index on disk. A question runs through keyword and meaning search, the lists are fused by reciprocal rank fusion and a cross-encoder reranks the top 20. The index reloads in half a second and rebuilds itself when the documents change. An offline hash embedder and word-overlap reranker let the tests run with no model.",
       "steps": [
         {
           "text": "Embed passages with a CPU model and store them in Qdrant",
-          "done": false
+          "done": true
         },
         {
           "text": "Add a tiny offline embedder so tests need no model download",
-          "done": false
+          "done": true
         },
         {
           "text": "Fuse keyword and meaning results with reciprocal rank fusion",
-          "done": false
+          "done": true
         },
         {
           "text": "Rerank the fused candidates with a cross-encoder",
-          "done": false
+          "done": true
         },
         {
           "text": "Save the index to disk and reload it without re-embedding",
-          "done": false
+          "done": true
         }
       ]
     },
     {
       "name": "Cited answers",
       "goal": "Answers written only from retrieved passages, with checked citations and refusals.",
-      "status": "todo",
+      "status": "doing",
       "outcome": "",
       "steps": [
         {
