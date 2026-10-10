@@ -1,0 +1,274 @@
+{
+  "id": 2,
+  "slug": "rag-knowledge-assistant",
+  "repo": "rag-knowledge-assistant",
+  "title": "RAG knowledge assistant with citations",
+  "tagline": "Question answering over company documents with hybrid search, reranking, cited answers and a measured retrieval report.",
+  "category": "RAG",
+  "status": "building",
+  "started": "2026-10-10",
+  "finished": "",
+  "pitch": "I built an assistant that answers staff questions from a company's own documents and shows where every sentence came from. It searches two ways at once, by meaning and by exact words, then a second model re-reads the best candidates and puts the right passage first. If the documents do not contain the answer, it says so instead of guessing. I do not ask you to trust it: the repository has a retrieval report measured on a public benchmark and on a question set for the demo handbook, and you can rerun both with one command.",
+  "problem": "Companies keep their knowledge in handbooks, procedures and manuals that nobody has time to read. Staff ask a colleague or guess. A plain chatbot makes things worse, because it answers from memory and invents details that sound right. A search box returns ten documents and leaves the reading to the user.",
+  "solution": "A retrieval-augmented generation (RAG) service for a fictional parcel carrier's operations handbook. Documents are split by heading into passages, indexed for keyword search (BM25) and for meaning search (embeddings in Qdrant). A question runs through both searches, the two result lists are fused, a cross-encoder reranks the top candidates, and the language model writes an answer only from the passages it was given, with a numbered citation after each claim. A relevance gate refuses questions the documents do not cover. An evaluation script measures each retrieval stage separately so the value of every component is a number, not an opinion.",
+  "features": [
+    "Hybrid search: keyword search (BM25) and meaning search (embeddings) run together and their results are fused",
+    "Reranking of the best candidates with a cross-encoder model that runs on CPU",
+    "Answers with numbered citations that link to the exact document and section",
+    "Citation check: a citation that points to a passage the model was not given is removed and the answer is flagged",
+    "Refusal when the documents do not contain the answer, decided before the language model is called",
+    "A retrieval report comparing keyword, meaning, hybrid and reranked search on a public benchmark (BEIR SciFact) and on the demo handbook",
+    "An answer report: correct source cited, expected facts present, refusals on out-of-scope questions",
+    "A web page that shows the answer, the sources, and how each passage ranked at every stage",
+    "Runs with no API key: an offline answer writer and a tiny built-in embedder for the tests"
+  ],
+  "stack": [
+    {
+      "name": "Python 3.12",
+      "role": "The whole back end.",
+      "why": "The standard language for AI work and the one every retrieval library supports first."
+    },
+    {
+      "name": "Qdrant (local mode, qdrant-client)",
+      "role": "Stores the passage embeddings and finds the nearest ones to a question.",
+      "why": "The same client code talks to an embedded on-disk index or to a Qdrant server by changing one setting, so the demo needs no Docker and the production path needs no rewrite."
+    },
+    {
+      "name": "fastembed (ONNX Runtime)",
+      "role": "Runs the embedding model (bge-small-en-v1.5) and the reranker (a MiniLM cross-encoder) on CPU.",
+      "why": "It gives the same models as sentence-transformers without PyTorch, so the install is about 230 MB instead of several GB and it starts fast on a small server."
+    },
+    {
+      "name": "BM25 (own implementation, about 80 lines)",
+      "role": "Keyword search over the passages.",
+      "why": "Exact words such as error codes and product numbers are where embeddings fail. The code is short enough to read and has no extra dependency."
+    },
+    {
+      "name": "Reciprocal rank fusion",
+      "role": "Merges the keyword list and the meaning list into one ranking.",
+      "why": "It uses only the rank positions, so there are no score scales to tune between two very different searches."
+    },
+    {
+      "name": "OpenAI Chat Completions API",
+      "role": "Writes the final answer from the retrieved passages.",
+      "why": "The most widely supported format. The same code works with OpenAI, Ollama, Groq or Azure by changing one URL."
+    },
+    {
+      "name": "FastAPI",
+      "role": "The HTTP API and the demo web page.",
+      "why": "Typed requests and responses and automatic API documentation with very little code."
+    },
+    {
+      "name": "pytest",
+      "role": "Automated tests that run offline in seconds.",
+      "why": "The standard Python test runner."
+    }
+  ],
+  "keywords": [],
+  "topics": [],
+  "workflow": [
+    {
+      "step": "Load and split",
+      "detail": "Each Markdown document is split at its headings into passages of a bounded size. Every passage keeps its document title and section heading."
+    },
+    {
+      "step": "Index",
+      "detail": "Each passage is indexed twice: its words go into a BM25 keyword index, and its embedding (a list of 384 numbers that captures meaning) goes into Qdrant."
+    },
+    {
+      "step": "Question in",
+      "detail": "The question arrives at the API. It is tokenised for keyword search and embedded for meaning search."
+    },
+    {
+      "step": "Hybrid retrieval",
+      "detail": "Both searches return their best passages. Reciprocal rank fusion merges the two lists into one list of candidates."
+    },
+    {
+      "step": "Rerank",
+      "detail": "A cross-encoder reads the question together with each candidate and gives a relevance score. The candidates are reordered by that score."
+    },
+    {
+      "step": "Relevance gate",
+      "detail": "If the best score is under a threshold, the assistant replies that the documents do not cover the question and the language model is not called."
+    },
+    {
+      "step": "Answer",
+      "detail": "The top passages are numbered and sent to the language model with the instruction to answer only from them and cite the number after each claim."
+    },
+    {
+      "step": "Citation check",
+      "detail": "The citation numbers in the answer are checked against the passages that were sent. The reply carries the answer, the sources and a trace of every stage."
+    }
+  ],
+  "phases": [
+    {
+      "name": "Foundation",
+      "goal": "A repository that runs, with documents to search and a keyword baseline.",
+      "status": "done",
+      "outcome": "A git repository with pinned dependencies, a 20-document operations handbook for a fictional parcel carrier (about 3,300 words), a splitter that turns it into 85 passages by heading, and a BM25 keyword index that answers in under a millisecond.",
+      "steps": [
+        {
+          "text": "Create the repo, virtual environment and pinned dependencies",
+          "done": true
+        },
+        {
+          "text": "Write the demo handbook: operations documents for a fictional parcel carrier",
+          "done": true
+        },
+        {
+          "text": "Split documents into passages by heading, with a size limit",
+          "done": true
+        },
+        {
+          "text": "Build the BM25 keyword index as the baseline",
+          "done": true
+        }
+      ]
+    },
+    {
+      "name": "Hybrid retrieval",
+      "goal": "Search by meaning and by keyword, fused and reranked.",
+      "status": "todo",
+      "outcome": "",
+      "steps": [
+        {
+          "text": "Embed passages with a CPU model and store them in Qdrant",
+          "done": false
+        },
+        {
+          "text": "Add a tiny offline embedder so tests need no model download",
+          "done": false
+        },
+        {
+          "text": "Fuse keyword and meaning results with reciprocal rank fusion",
+          "done": false
+        },
+        {
+          "text": "Rerank the fused candidates with a cross-encoder",
+          "done": false
+        },
+        {
+          "text": "Save the index to disk and reload it without re-embedding",
+          "done": false
+        }
+      ]
+    },
+    {
+      "name": "Cited answers",
+      "goal": "Answers written only from retrieved passages, with checked citations and refusals.",
+      "status": "todo",
+      "outcome": "",
+      "steps": [
+        {
+          "text": "Write the answer prompt with numbered sources",
+          "done": false
+        },
+        {
+          "text": "Add the OpenAI-compatible provider with token and cost tracking",
+          "done": false
+        },
+        {
+          "text": "Add the offline answer writer for tests and keyless runs",
+          "done": false
+        },
+        {
+          "text": "Check citations and flag answers without valid ones",
+          "done": false
+        },
+        {
+          "text": "Add the relevance gate that refuses out-of-scope questions",
+          "done": false
+        }
+      ]
+    },
+    {
+      "name": "Evaluation",
+      "goal": "Numbers for every retrieval stage and for the answers.",
+      "status": "todo",
+      "outcome": "",
+      "steps": [
+        {
+          "text": "Write the handbook question set with the correct passage for each question",
+          "done": false
+        },
+        {
+          "text": "Add a script that downloads the public BEIR SciFact benchmark",
+          "done": false
+        },
+        {
+          "text": "Measure recall, MRR and nDCG for keyword, meaning, hybrid and reranked search",
+          "done": false
+        },
+        {
+          "text": "Measure answers: correct source cited, expected facts present, refusals",
+          "done": false
+        },
+        {
+          "text": "Compare reranker models and keep the one the numbers support",
+          "done": false
+        }
+      ]
+    },
+    {
+      "name": "Interface",
+      "goal": "An API and a page a client can try.",
+      "status": "todo",
+      "outcome": "",
+      "steps": [
+        {
+          "text": "Build the FastAPI service: ask, search, documents, health",
+          "done": false
+        },
+        {
+          "text": "Build the web page with clickable citations and the retrieval trace",
+          "done": false
+        },
+        {
+          "text": "Add a command-line tool to index, ask and serve",
+          "done": false
+        }
+      ]
+    },
+    {
+      "name": "Verification and documentation",
+      "goal": "Proof that it works and a README a client can follow.",
+      "status": "todo",
+      "outcome": "",
+      "steps": [
+        {
+          "text": "Run the test suite offline",
+          "done": false
+        },
+        {
+          "text": "Run the project from a clean shell the way the README says",
+          "done": false
+        },
+        {
+          "text": "Run the answer evaluation on a real language model",
+          "done": false
+        },
+        {
+          "text": "Write the README with a diagram, real output and the results table",
+          "done": false
+        },
+        {
+          "text": "Complete the dashboard entry and check for secrets",
+          "done": false
+        }
+      ]
+    }
+  ],
+  "decisions": [],
+  "results": [],
+  "client_qa": [],
+  "concepts": [],
+  "limits": [],
+  "run": [],
+  "files": [],
+  "verification": {
+    "tests": "",
+    "live_llm": "pending",
+    "cost_usd": 0,
+    "notes": ""
+  }
+}

@@ -1,0 +1,7 @@
+.env
+.venv/
+__pycache__/
+.pytest_cache/
+# Built index and downloaded benchmark: both are recreated by a command.
+.index/
+data/scifact/
